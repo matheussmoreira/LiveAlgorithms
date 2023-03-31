@@ -13,7 +13,7 @@ struct InitialNode: View {
     var body: some View {
         Circle()
             .fill(Color.myGreen)
-            .frame(width: .nodeSize, height: .nodeSize)
+            .frame(width: Graph.nodeSize, height: Graph.nodeSize)
             .overlay {
                 Circle()
                     .stroke(Color.white, lineWidth: 3)

@@ -13,7 +13,7 @@ struct FinalNode: View {
     var body: some View {
         Rectangle()
             .fill(Color.myRed)
-            .frame(width: .nodeSize, height: .nodeSize)
+            .frame(width: Graph.nodeSize, height: Graph.nodeSize)
             .border(Color.white, width: 3)
             .blur(radius: isVisited ? 10 : 0)
     }

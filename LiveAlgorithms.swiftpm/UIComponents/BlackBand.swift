@@ -16,7 +16,7 @@ struct BlackBand: View {
         .overlay {
             Text(text)
                 .foregroundColor(.white)
-                .fontWeight(.bold)
+                .fontWeight(.semibold)
                 .font(.title3)
         }
     }
