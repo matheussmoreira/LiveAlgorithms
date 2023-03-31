@@ -13,23 +13,14 @@ struct InitialView: View {
     var body: some View {
         ZStack {
             Color.darkGray.ignoresSafeArea()
-            ZStack {
-                Image.appTitle1
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .padding(.horizontal, 56)
-                Image.appTitle2
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .offset(y: 8)
-                    .padding(.horizontal, 56)
-                Image.appTitle3
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .offset(y: 16)
-                    .padding(.horizontal, 56)
+            
+            AppTitleInline()
+                .padding(.horizontal)
+            
+            ForEach(graph.nodes) { node in
+                NodeView(node: node)
+                    .position(x: node.position.x, y: node.position.y)
             }
-            .padding(.horizontal)
         }
     }
 }

@@ -12,14 +12,14 @@ enum NodeType {
 }
 
 enum NodePlace {
-    case initial, intermed, final
+    case initial, normal, final
 }
 
 class Node: Identifiable {
     let id: Int
     let position: CGPoint
     let type: NodeType = .notVisited
-    let place: NodePlace = .intermed
+    let place: NodePlace = .normal
     
     init(id: Int, position: CGPoint) {
         self.id = id

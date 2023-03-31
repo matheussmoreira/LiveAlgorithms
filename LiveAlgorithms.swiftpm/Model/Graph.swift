@@ -24,9 +24,9 @@ class Graph {
     }
     
     static func graph() -> Graph {
-        let node1 = Node(id: 0, position: CGPoint(x: 0, y: 0))
-        let node2 = Node(id: 1, position: CGPoint(x: 1, y: 1))
-        let node3 = Node(id: 2, position: CGPoint(x: 2, y: 2))
+        let node1 = Node(id: 0, position: CGPoint(x: 100, y: 100))
+        let node2 = Node(id: 1, position: CGPoint(x: 200, y: 200))
+        let node3 = Node(id: 2, position: CGPoint(x: 300, y: 300))
         let graph = Graph(nodes: [node1,node2,node3])
         
         do {

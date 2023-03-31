@@ -8,8 +8,11 @@
 import SwiftUI
 
 extension Color {
-    static let darkGray = Color(color(named: "darkGray"))
     static let blackGray = Color(color(named: "blackGray"))
+    static let darkGray = Color(color(named: "darkGray"))
+    static let lightGray = Color(color(named: "lightGray"))
+    static let myGreen = Color(color(named: "myGreen"))
+    static let myRed = Color(color(named: "myRed"))
     
     // MARK: - Unwrap UIColor
     
