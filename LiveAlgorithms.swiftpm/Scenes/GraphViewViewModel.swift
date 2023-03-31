@@ -30,6 +30,8 @@ class GraphViewViewModel: ObservableObject {
     @Published var graph = Graph.generate()
     @Published var step: GraphMakingStep = .nodeSelection
     @Published var selectedAlgorithm: Algorithm?
+    @Published var initialNode: Node?
+    @Published var finalNode: Node?
     
     // MARK: - Computed Properties
     
@@ -65,6 +67,49 @@ class GraphViewViewModel: ObservableObject {
     }
     
     // MARK: - Methods
+    
+    // MARK: Initial and final nodes
+    
+    func handleAttempToDrawEdge(from node: Node) {
+        if step != .edgeSelection { return }
+        if node.isHidden { return }
+        
+        if initialNode == nil {
+            setInitialNode(node)
+        } else {
+            setFinalNode(node)
+        }
+    }
+    
+    private func setInitialNode(_ node: Node) {
+        initialNode = node
+        initialNode?.type = .visited
+    }
+    
+    private func setFinalNode(_ node: Node) {
+        if initialNode == node {
+            initialNode?.type = .notVisited
+            initialNode = nil
+            return
+        }
+        
+        do {
+            finalNode = node
+            let edge = try Edge(from: initialNode!, to: finalNode!)
+            graph.addEdge(edge)
+            clearInitialFinalNodes()
+        } catch {
+            print("Error: attempt to draw invalid edge!")
+        }
+    }
+    
+    func clearInitialFinalNodes() {
+        initialNode?.type = .notVisited
+        initialNode = nil
+        finalNode = nil
+    }
+    
+    // MARK: Navigation
 
     func nextStep() {
         switch step {

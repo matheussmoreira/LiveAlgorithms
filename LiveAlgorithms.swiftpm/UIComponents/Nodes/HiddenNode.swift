@@ -12,6 +12,6 @@ struct HiddenNode: View {
         Circle()
             .fill(Color.lightGray)
             .frame(width: Graph.nodeSize, height: Graph.nodeSize)
-            .blur(radius: 10)
+            .blur(radius: 15)
     }
 }

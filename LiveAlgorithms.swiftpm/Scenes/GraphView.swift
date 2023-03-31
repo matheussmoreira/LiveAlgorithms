@@ -17,12 +17,31 @@ struct GraphView: View {
             
             // MARK: Graph
             ZStack {
-                #warning("Draw edges")
+                // Edges
+                ForEach(0..<vm.graph.nodes.count, id: \.self) { i in
+                    let nodeEdges = vm.graph.edges[i]
+                    ForEach(0..<nodeEdges.count, id: \.self) { j in
+                        let edge = nodeEdges[j]
+                        Path { path in
+                            path.move(to: edge.sourcePosition)
+                            path.addLine(to: edge.destPosition)
+                        }
+                        .strokedPath(StrokeStyle(lineWidth: 3))
+                        .foregroundColor(.white)
+                        .onTapGesture {
+                            withAnimation {
+                                #warning("Não funciona!")
+                                vm.graph.removeEdge(edge)
+                            }
+                        }
+                    }
+                }
                 
                 // Nodes
                 ForEach(vm.graph.nodes) { node in
                     NodeView(node: node)
                         .position(node.position)
+                        .zIndex(node.isHidden ? -1 : 0)
                         .onTapGesture {
                             withAnimation {
                                 handleNodeTap(node)
@@ -46,6 +65,7 @@ struct GraphView: View {
                 // MARK: Bottom bar
                 HStack {
                     // Previous step
+                    #warning("Tratar edgeSelection")
                     Button(action: {
                         withAnimation {
                             vm.previousStep()
@@ -57,7 +77,7 @@ struct GraphView: View {
                     .disabled(vm.previousStepButtonIsDisabled)
                     
                     // Options bar
-                    NodeSelectionOptionsBar(graph: vm.graph)
+                    NodeSelectionOptionsBar(graph: vm.graph, vm: vm)
                         .padding()
                     
                     // Next step
@@ -81,6 +101,8 @@ extension GraphView {
         switch vm.step {
             case .nodeSelection:
                 node.toggleHiddenStatus()
+            case .edgeSelection:
+                vm.handleAttempToDrawEdge(from: node)
             default:
                 break
         }

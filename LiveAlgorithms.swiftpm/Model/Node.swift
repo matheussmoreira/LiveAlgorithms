@@ -21,10 +21,16 @@ class Node: Identifiable, ObservableObject {
     @Published var type: NodeType = .notVisited
     @Published var place: NodePlace = .normal
     
+    var isHidden: Bool {
+        return type == .hidden
+    }
+    
     init(id: Int, position: CGPoint) {
         self.id = id
         self.position = position
     }
+    
+    // MARK: - Methods
     
     func toggleHiddenStatus() {
         if type == .hidden {
