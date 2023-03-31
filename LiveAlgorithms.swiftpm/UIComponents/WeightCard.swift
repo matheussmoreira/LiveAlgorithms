@@ -1,5 +1,5 @@
 //
-//  WeightView.swift
+//  WeightCard.swift
 //  
 //
 //  Created by Matheus S. Moreira on 30/03/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct WeightView: View {
+struct WeightCard: View {
     var number: String
     
     var body: some View {

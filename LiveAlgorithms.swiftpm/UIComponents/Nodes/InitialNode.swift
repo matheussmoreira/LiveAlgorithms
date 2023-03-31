@@ -1,5 +1,5 @@
 //
-//  InitialNodeView.swift
+//  InitialNode.swift
 //  
 //
 //  Created by Matheus S. Moreira on 30/03/23.
@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct InitialNodeView: View {
+struct InitialNode: View {
     var isVisited: Bool
     
     var body: some View {
         Circle()
             .fill(Color.myGreen)
-            .frame(width: .nodeSize, height: .nodeSize)
+            .frame(width: Graph.nodeSize, height: Graph.nodeSize)
             .overlay {
                 Circle()
                     .stroke(Color.white, lineWidth: 3)

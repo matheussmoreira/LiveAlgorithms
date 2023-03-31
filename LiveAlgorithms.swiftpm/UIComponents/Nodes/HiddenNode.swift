@@ -1,5 +1,5 @@
 //
-//  HiddenNodeView.swift
+//  HiddenNode.swift
 //  
 //
 //  Created by Matheus S. Moreira on 30/03/23.
@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct HiddenNodeView: View {
+struct HiddenNode: View {
     var body: some View {
         Circle()
             .fill(Color.lightGray)
-            .frame(width: .nodeSize, height: .nodeSize)
+            .frame(width: Graph.nodeSize, height: Graph.nodeSize)
             .blur(radius: 10)
     }
 }
