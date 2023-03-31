@@ -8,11 +8,15 @@
 import Foundation
 
 class Graph {
-    static let maxNodesQuant = 35
+    // MARK: - Properties
+    
+    static let maxNodesQuant = 25
     static let maxNodesQuantFirstScreen = 80
     
     var nodes: [Node]
     var edges: [[Edge]]
+    
+    // MARK: - Init
     
     init(nodes: [Node]) {
         self.nodes = nodes
@@ -21,22 +25,6 @@ class Graph {
         for _ in nodes {
             edges.append([Edge]())
         }
-    }
-    
-    static func graph() -> Graph {
-        let node1 = Node(id: 0, position: CGPoint(x: 100, y: 100))
-        let node2 = Node(id: 1, position: CGPoint(x: 200, y: 200))
-        let node3 = Node(id: 2, position: CGPoint(x: 300, y: 300))
-        let graph = Graph(nodes: [node1,node2,node3])
-        
-        do {
-            let edge1 = try Edge(from: node1, to: node2)
-            let edge2 = try Edge(from: node1, to: node3)
-            graph.addEdge(edge1)
-            graph.addEdge(edge2)
-        } catch { }
-        
-        return graph
     }
     
     // MARK: - Add
@@ -90,5 +78,31 @@ class Graph {
                 print(edge.description())
             }
         }
+    }
+}
+
+extension Graph {
+    static func graph() -> Graph {
+        var nodes = [Node]()
+        
+        for i in 0..<maxNodesQuant {
+            #warning("Tratar nós sobrepostos")
+            let randomX = CGFloat.random(in: UIHelper.graphHRange)
+            let randomY = CGFloat.random(in: UIHelper.graphVRange)
+            let randomPoint = CGPoint(x: randomX, y: randomY)
+            let node = Node(id: i, position: randomPoint)
+            nodes.append(node)
+        }
+        
+        let graph = Graph(nodes: nodes)
+        
+//        do {
+//            let edge1 = try Edge(from: node1, to: node2)
+//            let edge2 = try Edge(from: node1, to: node3)
+//            graph.addEdge(edge1)
+//            graph.addEdge(edge2)
+//        } catch { }
+        
+        return graph
     }
 }
