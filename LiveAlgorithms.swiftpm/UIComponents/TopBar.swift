@@ -1,5 +1,5 @@
 //
-//  BlackBand.swift
+//  TopBar.swift
 //  
 //
 //  Created by Matheus S. Moreira on 31/03/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BlackBand: View {
+struct TopBar: View {
     var text: String
     var body: some View {
         Rectangle()

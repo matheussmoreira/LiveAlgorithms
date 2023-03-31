@@ -19,31 +19,24 @@ struct NodeSelectionOptionsBar: View {
                 .blur(radius: 10)
             
             HStack {
+                Spacer()
                 OptionsButton(image: .clear, text: "Clear") {
-                    clearNodes()
+                    withAnimation {
+                        graph.retrieveAllNodes()
+                    }
                 }.padding(.trailing)
+                Spacer()
                 
                 OptionsButton(image: .random, text: "Random") {
-                    randomizeAllNodeTypes()
+                    withAnimation {
+                        graph.randomizeAllNodeTypes()
+                    }
                 }.padding(.leading)
+                Spacer()
             }
         }
         .frame(height: h)
         .frame(maxWidth: w)
-    }
-}
-
-extension NodeSelectionOptionsBar {
-    func clearNodes() {
-        withAnimation {
-            graph.retrieveAllNodes()
-        }
-    }
-    
-    func randomizeAllNodeTypes() {
-        withAnimation {
-            graph.randomizeAllNodeTypes()
-        }
     }
 }
 
@@ -62,8 +55,7 @@ struct OptionsButton: View {
                     .foregroundColor(.white)
                     .font(.title2)
                     .fontWeight(.semibold)
-                    .underline()
             }
-        } // Button
+        }
     }
 }

@@ -36,6 +36,7 @@ struct UIHelper {
             CGPoint(x: screenWidth * 184/744, y: screenHeight * 739/1133),
             CGPoint(x: screenWidth * 224/744, y: screenHeight * 514/1133),
             CGPoint(x: screenWidth * 398/744, y: screenHeight * 361/1133),
+            CGPoint(x: screenWidth * 396/744, y: screenHeight * 290/1133),
             CGPoint(x: screenWidth * 239/744, y: screenHeight * 613/1133),
             CGPoint(x: screenWidth * 527/744, y: screenHeight * 535/1133),
             CGPoint(x: screenWidth * 639/744, y: screenHeight * 629/1133),
