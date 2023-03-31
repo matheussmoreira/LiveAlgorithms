@@ -41,6 +41,10 @@ class Graph: ObservableObject {
         edges.append([Edge]())
     }
     
+    func retrieveAllNodes() {
+        nodes.forEach { $0.showAsNotVisited() }
+    }
+    
 //    func removeNode(_ node: Node) {
 //        nodes.remove(at: node.id)
 //        for e in edges[node.id] { removeEdge(e) }

@@ -33,6 +33,10 @@ class Node: Identifiable, ObservableObject {
             type = .hidden
         }
     }
+    
+    func showAsNotVisited() {
+        type = .notVisited
+    }
 }
 
 extension Node: Equatable {

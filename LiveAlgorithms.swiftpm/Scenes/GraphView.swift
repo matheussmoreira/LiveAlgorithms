@@ -19,7 +19,7 @@ struct GraphView: View {
             
             // MARK: Graph
             ZStack {
-                #warning("Edges")
+                #warning("Draw edges")
                 
                 // Nodes
                 ForEach(graph.nodes) { node in
@@ -45,14 +45,21 @@ struct GraphView: View {
                 
                 #warning("Change text according to navigation")
                 BlackBand(text: "Select the nodes you want to remove from the graph")
-                    .frame(height: 64)
+                    .frame(height: UIHelper.screenHeight * 64/1133)
                     .padding(.top, 32)
                 
                 Spacer()
                 
-                AppTitleInline().padding()
-                #warning("Navigation")
-                
+                #warning("Code navigation and options")
+                HStack {
+                    #warning("Arrow previous")
+                    NodeSelectionOptionsBar(graph: graph)
+                        .padding()
+                    Button(action: {}) {
+                        Arrow(next: true)
+                    }
+                }
+
             } // VStack
         } // ZStack
     }
