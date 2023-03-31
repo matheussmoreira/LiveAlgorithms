@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NodeView: View {
-    let node: Node
+    @ObservedObject var node: Node
     
     private var nodeIsVisited: Bool {
         node.type == .visited

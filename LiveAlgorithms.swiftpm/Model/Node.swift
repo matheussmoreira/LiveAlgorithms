@@ -15,15 +15,23 @@ enum NodePlace {
     case initial, normal, final
 }
 
-class Node: Identifiable {
+class Node: Identifiable, ObservableObject {
     let id: Int
     let position: CGPoint
-    let type: NodeType = .notVisited
-    let place: NodePlace = .normal
+    @Published var type: NodeType = .notVisited
+    @Published var place: NodePlace = .normal
     
     init(id: Int, position: CGPoint) {
         self.id = id
         self.position = position
+    }
+    
+    func toggleHiddenStatus() {
+        if type == .hidden {
+            type = .notVisited
+        } else {
+            type = .hidden
+        }
     }
 }
 
