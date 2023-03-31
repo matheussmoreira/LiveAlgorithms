@@ -1,5 +1,5 @@
 //
-//  InitialNodeView.swift
+//  InitialNode.swift
 //  
 //
 //  Created by Matheus S. Moreira on 30/03/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct InitialNodeView: View {
+struct InitialNode: View {
     var isVisited: Bool
     
     var body: some View {

@@ -1,5 +1,5 @@
 //
-//  FinalNodeView.swift
+//  FinalNode.swift
 //  
 //
 //  Created by Matheus S. Moreira on 30/03/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FinalNodeView: View {
+struct FinalNode: View {
     var isVisited: Bool
     
     var body: some View {

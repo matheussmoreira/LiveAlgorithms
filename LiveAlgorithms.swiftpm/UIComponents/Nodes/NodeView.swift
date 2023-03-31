@@ -19,14 +19,14 @@ struct NodeView: View {
     
     var body: some View {
         if node.place == .initial {
-            InitialNodeView(isVisited: nodeIsVisited)
+            InitialNode(isVisited: nodeIsVisited)
         } else if node.place == .final {
-            FinalNodeView(isVisited: nodeIsVisited)
+            FinalNode(isVisited: nodeIsVisited)
         } else {
             if nodeIsUnhidden {
-                NormalNodeView(isVisited: nodeIsVisited)
+                NormalNode(isVisited: nodeIsVisited)
             } else {
-                HiddenNodeView()
+                HiddenNode()
             }
         }
     }

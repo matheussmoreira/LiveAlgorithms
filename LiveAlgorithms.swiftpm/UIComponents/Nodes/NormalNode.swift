@@ -1,5 +1,5 @@
 //
-//  NormalNodeView.swift
+//  NormalNode.swift
 //  
 //
 //  Created by Matheus S. Moreira on 30/03/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NormalNodeView: View {
+struct NormalNode: View {
     var isVisited: Bool
     
     var body: some View {
