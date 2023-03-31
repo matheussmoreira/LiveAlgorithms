@@ -18,10 +18,12 @@ struct Arrow: View {
                 if next {
                     Image.next
                         .fontWeight(.bold)
+                        .foregroundColor(.black)
                         
                 } else {
                     Image.previous
                         .fontWeight(.bold)
+                        .foregroundColor(.black)
                 }
             }
     }

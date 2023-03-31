@@ -8,45 +8,82 @@
 import SwiftUI
 
 struct GraphView: View {
-    @State private var graph = Graph.empty()
+    @StateObject private var vm = GraphViewViewModel()
     
     var body: some View {
         ZStack {
             Color.darkGray
                 .ignoresSafeArea()
             
+            // MARK: Graph
+            ZStack {
+                #warning("Draw edges")
+                
+                // Nodes
+                ForEach(vm.graph.nodes) { node in
+                    NodeView(node: node)
+                        .position(node.position)
+                        .onTapGesture {
+                            withAnimation {
+                                handleNodeTap(node)
+                            }
+                        }
+                }
+            }
+            // MARK: End Graph
+            
             VStack {
                 AppTitleInline()
                     .padding(.top, 32)
                 
-                #warning("Change text according to navigation")
-                BlackBand(text: "Select the nodes you want to remove from the graph")
-                    .frame(height: 64)
+                TopBar(text: vm.topBarText)
+                    .frame(height: UIHelper.screenHeight * 64/1133)
                     .padding(.top, 32)
                 
-                // MARK: Graph
-                ZStack {
-                    #warning("Edges")
+                // Graph space
+                Spacer()
+                
+                // MARK: Bottom bar
+                HStack {
+                    // Previous step
+                    Button(action: {
+                        withAnimation {
+                            vm.previousStep()
+                        }
+                    }) {
+                        Arrow(next: false)
+                    }
+                    .opacity(vm.previousStepButtonOpacity)
+                    .disabled(vm.previousStepButtonIsDisabled)
                     
-                    // Nodes
-                    GeometryReader { geometry in
-                        let newGraph = Graph.graph(inBounds: geometry.size)
-                        
-                        ForEach(newGraph.nodes) { node in
-                            NodeView(node: node)
-                                .position(node.position)
+                    // Options bar
+                    NodeSelectionOptionsBar(graph: vm.graph)
+                        .padding()
+                    
+                    // Next step
+                    Button(action: {
+                        withAnimation {
+                            vm.nextStep()
                         }
-                        .onAppear {
-                            graph = newGraph
-                        }
+                    }) {
+                        Arrow(next: true)
                     }
                 }
-                // MARK: End Graph
-                
-                #warning("Navigation")
-                
+                // MARK: End bottom bar
+
             } // VStack
         } // ZStack
+    }
+}
+
+extension GraphView {
+    func handleNodeTap(_ node: Node) {
+        switch vm.step {
+            case .nodeSelection:
+                node.toggleHiddenStatus()
+            default:
+                break
+        }
     }
 }
 

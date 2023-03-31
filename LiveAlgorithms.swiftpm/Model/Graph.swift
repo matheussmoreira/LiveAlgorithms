@@ -7,17 +7,21 @@
 
 import Foundation
 
-class Graph {
+class Graph: ObservableObject {
     // MARK: Type Properties
     
-    static let maxNodesQuant = 45
-    static let maxNodesQuantFirstScreen = 80
+    static let maxNodesQuant = UIHelper.nodesPositions.count
+//    static let maxNodesQuantFirstScreen = 80
     static let nodeSize: CGFloat = 30
     
     // MARK: Properties
     
-    var nodes: [Node]
-    var edges: [[Edge]]
+    @Published var nodes: [Node]
+    @Published var edges: [[Edge]]
+    
+//    var unhiddenNodes: [Node] {
+//        return nodes.filter({ $0.type != .hidden })
+//    }
     
     // MARK: Init
     
@@ -37,11 +41,19 @@ class Graph {
         edges.append([Edge]())
     }
     
-    func removeNode(_ node: Node) {
-        nodes.remove(at: node.id)
-        for e in edges[node.id] { removeEdge(e) }
-        edges.remove(at: node.id)
+    func retrieveAllNodes() {
+        nodes.forEach { $0.showAsNotVisited() }
     }
+    
+    func randomizeAllNodeTypes() {
+        nodes.forEach { $0.randomizeType() }
+    }
+    
+//    func removeNode(_ node: Node) {
+//        nodes.remove(at: node.id)
+//        for e in edges[node.id] { removeEdge(e) }
+//        edges.remove(at: node.id)
+//    }
     
     // MARK: Edges
     
@@ -54,7 +66,6 @@ class Graph {
     func removeEdge(_ edge: Edge) {
         let sourceNode = nodes[edge.source.id]
         let destNode = nodes[edge.dest.id]
-        
         edges[sourceNode.id].removeAll(where: { $0 == edge })
         edges[destNode.id].removeAll(where: { $0 == edge.reversed })
     }
@@ -62,25 +73,36 @@ class Graph {
 }
 
 extension Graph {
-    static func empty() -> Graph {
-        let graph = Graph(nodes: [Node]())
-        return graph
+    static func generate() -> Graph {
+        var nodes = [Node]()
+        for i in 0..<maxNodesQuant {
+            let point = UIHelper.nodesPositions[i]
+            let node = Node(id: i, position: point)
+            nodes.append(node)
+        }
+        return Graph(nodes: nodes)
     }
     
-    static func graph(inBounds bounds: CGSize) -> Graph {
+    static func randomPlacedNodes() -> Graph {
         var nodes = [Node]()
         
         for i in 0..<maxNodesQuant {
-            #warning("Tratar nós sobrepostos")
-            let randomX = CGFloat.random(in: getRange(in: bounds.width))
-            let randomY = CGFloat.random(in: getRange(in: bounds.height))
+            // #warning("Tratar nós sobrepostos")
+            let randomX = CGFloat.random(in: getHRange())
+            let randomY = CGFloat.random(in: getHRange())
             let randomPoint = CGPoint(x: randomX, y: randomY)
             let node = Node(id: i, position: randomPoint)
             nodes.append(node)
             
-            func getRange(in containerDimension: CGFloat) -> ClosedRange<CGFloat> {
-                let lowerBound = Self.nodeSize
-                let higherBound = containerDimension - Self.nodeSize
+            func getHRange() -> ClosedRange<CGFloat> {
+                let lowerBound = Self.nodeSize*2
+                let higherBound = UIHelper.screenWidth - Self.nodeSize*2
+                return lowerBound...higherBound
+            }
+            
+            func getVRange() -> ClosedRange<CGFloat> {
+                let lowerBound = UIHelper.screenHeight * 0.278
+                let higherBound = UIHelper.screenWidth * 0.823
                 return lowerBound...higherBound
             }
         }
