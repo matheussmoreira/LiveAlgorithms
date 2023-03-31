@@ -37,6 +37,11 @@ class Node: Identifiable, ObservableObject {
     func showAsNotVisited() {
         type = .notVisited
     }
+    
+    func randomizeType() {
+        let types: [NodeType] = [.hidden, .notVisited]
+        type = types.randomElement() ?? .hidden
+    }
 }
 
 extension Node: Equatable {

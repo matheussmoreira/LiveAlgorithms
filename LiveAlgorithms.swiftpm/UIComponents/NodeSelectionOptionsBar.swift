@@ -19,16 +19,17 @@ struct NodeSelectionOptionsBar: View {
                 .blur(radius: 10)
             
             HStack {
-                Spacer()
-                OptionsButton(action: { clearNodes() }, image: .clear, text: "Clear")
-                Spacer()
-                OptionsButton(action: {}, image: .undo, text: "Undo")
-                Spacer()
-                OptionsButton(action: {}, image: .random, text: "Random")
-                Spacer()
+                OptionsButton(image: .clear, text: "Clear") {
+                    clearNodes()
+                }.padding(.trailing)
+                
+                OptionsButton(image: .random, text: "Random") {
+                    randomizeAllNodeTypes()
+                }.padding(.leading)
             }
         }
-        .frame(width: w, height: h)
+        .frame(height: h)
+        .frame(maxWidth: w)
     }
 }
 
@@ -38,12 +39,18 @@ extension NodeSelectionOptionsBar {
             graph.retrieveAllNodes()
         }
     }
+    
+    func randomizeAllNodeTypes() {
+        withAnimation {
+            graph.randomizeAllNodeTypes()
+        }
+    }
 }
 
 struct OptionsButton: View {
-    var action: () -> Void
     var image: Image
     var text: String
+    var action: () -> Void
     
     var body: some View {
         Button(action: self.action ) {

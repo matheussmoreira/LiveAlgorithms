@@ -45,6 +45,10 @@ class Graph: ObservableObject {
         nodes.forEach { $0.showAsNotVisited() }
     }
     
+    func randomizeAllNodeTypes() {
+        nodes.forEach { $0.randomizeType() }
+    }
+    
 //    func removeNode(_ node: Node) {
 //        nodes.remove(at: node.id)
 //        for e in edges[node.id] { removeEdge(e) }
