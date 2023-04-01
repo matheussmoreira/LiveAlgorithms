@@ -10,10 +10,11 @@ import Foundation
 class GraphViewViewModel: ObservableObject {
     
     // MARK: Stored Properties
+    
     private var graphStack: Stack<Graph>
     
     @Published var graph: Graph
-    @Published var step: GraphMakingStep = .nodeSelection
+    @Published var step: GraphMakingStep
     @Published var selectedAlgorithm: Algorithm?
     @Published var edgeSourceNode: Node?
     @Published var edgeDestNode: Node?
@@ -56,85 +57,16 @@ class GraphViewViewModel: ObservableObject {
     }
     
     // MARK: - Init
+    
     init() {
         graph = Graph.generate()
         graphStack = Stack()
-    }
-    
-    // MARK: - Edges
-    
-    func handleAttempToDrawEdge(from node: Node) {
-        if step != .edgeSelection { return }
-        if node.isHidden { return }
-        
-        if edgeSourceNode == nil {
-            setEdgeSourceNode(node)
-        } else {
-            // Picking dest node
-            do {
-                let nodeContainsEdge = try edgeConnects(node)
-                if !nodeContainsEdge { setEdgeDestNode(node) }
-            } catch {
-                // EdgeError: there is no source node
-            }
-        }
-    }
-    
-    private func setEdgeSourceNode(_ node: Node) {
-        edgeSourceNode = node
-        edgeSourceNode?.type = .visited
-    }
-    
-    private func setEdgeDestNode(_ node: Node) {
-        if edgeSourceNode == node {
-            edgeSourceNode?.type = .notVisited
-            edgeSourceNode = nil
-            return
-        }
-        
-        do {
-            edgeDestNode = node
-            let edge = try Edge(from: edgeSourceNode!, to: edgeDestNode!)
-            graph.addEdge(edge)
-            clearEdgeInitialDestNodes()
-        } catch {
-            print("Error: attempt to draw invalid edge!")
-        }
-    }
-    
-    private func edgeConnects(_ destNode: Node) throws -> Bool {
-        guard let edgeSourceNode = edgeSourceNode else {
-            throw EdgeError.nilSourceNode
-        }
-        
-        for nodeEdge in graph.edges[edgeSourceNode.id] {
-            if nodeEdge.dest == destNode { return true }
-        }
-        
-        return false
-    }
-    
-    func clearEdgeInitialDestNodes() {
-        edgeSourceNode?.type = .notVisited
-        edgeSourceNode = nil
-        edgeDestNode = nil
-    }
-    
-    func removeEdge(_ edge: Edge) {
-        let copy = graph.copy()
-        copy.removeEdge(edge)
-        graph = copy
-    }
-    
-    func removeAllEdges() {
-        let copy = graph.copy()
-        copy.removeAllEdges()
-        graph = copy
+        step = .nodeSelection
     }
     
     // MARK: - Options bar
     
-    func clearAction() {
+    func clearButtonTapped() {
         switch step {
             case .nodeSelection:
                 graph.retrieveAllNodes()
@@ -144,7 +76,99 @@ class GraphViewViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Navigation
+    func randomButtonTapped() {
+        switch step {
+            case .nodeSelection:
+                graph.randomizeNodeSelection()
+            case .edgeSelection:
+                randomizeEdgeSelection()
+            default: break
+        }
+    }
+    
+}
+
+// MARK: - Edges
+
+extension GraphViewViewModel {
+    
+    // MARK: Tapping on the nodes
+    
+    func attemptToConnect(_ node: Node) {
+        if step != .edgeSelection { return }
+        if node.isHidden { return }
+        
+        if edgeSourceNode == nil {
+            edgeSourceNode = node
+            edgeSourceNode?.type = .visited
+        } else {
+            do {
+                // Picking dest node
+                let nodeContainsEdge = try edgeConnects(node)
+                if !nodeContainsEdge { connectSourceNodeTo(node) }
+            } catch {
+                // EdgeError: there is no source node
+            }
+        }
+    }
+    
+    private func edgeConnects(_ destNode: Node) throws -> Bool {
+        guard let edgeSourceNode = edgeSourceNode else {
+            throw EdgeError.nilSourceNode
+        }
+        
+        return graph.edgeConnects(sourceNode: edgeSourceNode, destNode: destNode)
+    }
+    
+    private func connectSourceNodeTo(_ node: Node) {
+        // Does not connect to the same node
+        if edgeSourceNode == node {
+            edgeSourceNode?.type = .notVisited
+            edgeSourceNode = nil
+            return
+        }
+        
+        do {
+            // Create edge
+            edgeDestNode = node
+            let edge = try Edge(from: edgeSourceNode!, to: edgeDestNode!)
+            graph.addEdge(edge)
+            
+            // Clear selections
+            edgeSourceNode?.type = .notVisited
+            edgeSourceNode = nil
+            edgeDestNode = nil
+        } catch {
+            // EdgeError: attempt to draw invalid edge!
+        }
+    }
+    
+    // MARK: Tapping on an edge
+    
+    func removeEdge(_ edge: Edge) {
+        let copy = graph.copy()
+        copy.removeEdge(edge)
+        graph = copy
+    }
+    
+    // MARK: Options bar handling
+    
+    private func removeAllEdges() {
+        let copy = graph.copy()
+        copy.removeAllEdges()
+        graph = copy
+    }
+    
+    private func randomizeEdgeSelection() {
+        let copy = graph.copy()
+        copy.edges = copy.getRandomEdges()
+        graph = copy
+    }
+}
+
+// MARK: - Navigation
+
+extension GraphViewViewModel {
     
     private func retrievePreviousGraph() {
         if let poppedGraph = graphStack.pop() {

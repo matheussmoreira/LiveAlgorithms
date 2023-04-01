@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NodeSelectionOptionsBar: View {
-    @ObservedObject var graph: Graph
+//    @ObservedObject var graph: Graph
     @ObservedObject var vm: GraphViewViewModel
     
     private let w = UIHelper.screenWidth * 415/744
@@ -23,16 +23,12 @@ struct NodeSelectionOptionsBar: View {
             HStack {
                 Spacer()
                 OptionsButton(image: .clear, text: "Clear") {
-                    withAnimation { vm.clearAction() }
+                    withAnimation { vm.clearButtonTapped() }
                 }.padding(.trailing)
                 Spacer()
                 
                 OptionsButton(image: .random, text: "Random") {
-                    #warning("Tratar edgeSelection")
-                    if vm.step != .nodeSelection { return }
-                    withAnimation {
-                        graph.randomizeAllNodeTypes()
-                    }
+                    withAnimation { vm.randomButtonTapped() }
                 }.padding(.leading)
                 Spacer()
             }

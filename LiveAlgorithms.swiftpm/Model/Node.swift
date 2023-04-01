@@ -36,7 +36,7 @@ class Node: Identifiable, ObservableObject {
         type = .notVisited
     }
     
-    func randomizeType() {
+    func randomizeSelection() {
         let types: [NodeType] = [.hidden, .notVisited]
         type = types.randomElement() ?? .hidden
     }

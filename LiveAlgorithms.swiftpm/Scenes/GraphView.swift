@@ -75,7 +75,7 @@ struct GraphView: View {
                     .disabled(vm.previousStepButtonIsDisabled)
                     
                     // Options bar
-                    NodeSelectionOptionsBar(graph: vm.graph, vm: vm)
+                    NodeSelectionOptionsBar(vm: vm)
                         .padding()
                     
                     // Next step
@@ -100,7 +100,7 @@ extension GraphView {
             case .nodeSelection:
                 node.toggleHiddenStatus()
             case .edgeSelection:
-                vm.handleAttempToDrawEdge(from: node)
+                vm.attemptToConnect(node)
             default:
                 break
         }
