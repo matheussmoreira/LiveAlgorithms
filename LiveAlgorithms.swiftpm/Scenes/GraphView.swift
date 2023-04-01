@@ -28,10 +28,10 @@ struct GraphView: View {
                         }
                         .strokedPath(StrokeStyle(lineWidth: 3))
                         .foregroundColor(.white)
+                        .zIndex(-1)
                         .onTapGesture {
                             withAnimation {
-                                #warning("Não funciona!")
-                                vm.graph.removeEdge(edge)
+                                vm.removeEdge(edge)
                             }
                         }
                     }
@@ -41,7 +41,6 @@ struct GraphView: View {
                 ForEach(vm.graph.nodes) { node in
                     NodeView(node: node)
                         .position(node.position)
-                        .zIndex(node.isHidden ? -1 : 0)
                         .onTapGesture {
                             withAnimation {
                                 handleNodeTap(node)
@@ -65,7 +64,6 @@ struct GraphView: View {
                 // MARK: Bottom bar
                 HStack {
                     // Previous step
-                    #warning("Tratar edgeSelection")
                     Button(action: {
                         withAnimation {
                             vm.previousStep()

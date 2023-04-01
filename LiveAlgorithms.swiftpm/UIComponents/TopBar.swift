@@ -18,6 +18,7 @@ struct TopBar: View {
                 .foregroundColor(.white)
                 .fontWeight(.semibold)
                 .font(.title3)
+                .multilineTextAlignment(.center)
         }
     }
 }

@@ -23,11 +23,7 @@ struct NodeSelectionOptionsBar: View {
             HStack {
                 Spacer()
                 OptionsButton(image: .clear, text: "Clear") {
-                    #warning("Tratar edgeSelection")
-                    if vm.step != .nodeSelection { return }
-                    withAnimation {
-                        graph.retrieveAllNodes()
-                    }
+                    withAnimation { vm.clearAction() }
                 }.padding(.trailing)
                 Spacer()
                 

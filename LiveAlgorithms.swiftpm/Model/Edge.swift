@@ -7,10 +7,6 @@
 
 import Foundation
 
-enum EdgeInitError: Error {
-    case equalSourceDest
-}
-
 class Edge {
     let source: Node
     let dest: Node
@@ -24,14 +20,14 @@ class Edge {
             e.weight = weight
             return e
         } catch {
-            print("Error: attempt to reverse invalid edge")
+            // EdgeError: attempt to reverse invalid edge
             return nil
         }
     }
     
     init(from source: Node, to dest: Node) throws {
         if source == dest {
-            throw EdgeInitError.equalSourceDest
+            throw EdgeError.equalSourceDest
         }
         
         self.source = source

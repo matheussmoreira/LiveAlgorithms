@@ -7,14 +7,6 @@
 
 import Foundation
 
-enum NodeType {
-    case hidden, notVisited, visited
-}
-
-enum NodePlace {
-    case initial, normal, final
-}
-
 class Node: Identifiable, ObservableObject {
     let id: Int
     let position: CGPoint

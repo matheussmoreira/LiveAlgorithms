@@ -7,7 +7,17 @@
 
 import Foundation
 
-class Graph: ObservableObject {
+public protocol Copying: AnyObject {
+    init(_ prototype: Self)
+}
+
+extension Copying {
+    public func copy() -> Self {
+        return type(of: self).init(self)
+    }
+}
+
+class Graph: ObservableObject, Copying {
     // MARK: Type Properties
     
     static let maxNodesQuant = UIHelper.nodesPositions.count
@@ -32,6 +42,15 @@ class Graph: ObservableObject {
         for _ in nodes {
             edges.append([Edge]())
         }
+    }
+    
+    init(nodes: [Node], edges: [[Edge]]) {
+        self.nodes = nodes
+        self.edges = edges
+    }
+    
+    required convenience init(_ prototype: Graph) {
+        self.init(nodes: prototype.nodes, edges: prototype.edges)
     }
     
     // MARK: Nodes
@@ -70,7 +89,17 @@ class Graph: ObservableObject {
         edges[destNode.id].removeAll(where: { $0 == edge.reversed })
     }
     
+    func removeAllEdges() {
+        for nodeEdges in edges {
+            for edge in nodeEdges {
+                removeEdge(edge)
+            }
+        }
+    }
+    
 }
+
+// MARK: - Graph instance creation
 
 extension Graph {
     static func generate() -> Graph {
