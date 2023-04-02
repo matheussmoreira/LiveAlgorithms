@@ -76,44 +76,34 @@ class Graph: ObservableObject, Copying {
     
     // MARK: - Edges
     
-    // MARK: Get edges
+    // MARK: Create edges
     
     func addEdge(_ edge: Edge) {
-        guard let rev = edge.reversed else { return }
-        edges[edge.source.id].append(edge)
-        edges[edge.dest.id].append(rev)
+        return addEdge(edge, on: &edges)
     }
     
-    private func addEdge(_ edge: Edge, on edgesArray: inout [[Edge]]) {
-        guard let rev = edge.reversed else { return }
-        edgesArray[edge.source.id].append(edge)
-        edgesArray[edge.dest.id].append(rev)
+    private func addEdge(_ edge: Edge, on graphEdges: inout [[Edge]]) {
+        let rev = edge.reversed
+        graphEdges[edge.source.id].append(edge)
+        graphEdges[edge.dest.id].append(rev)
     }
     
     func getRandomEdges() -> [[Edge]] {
-        var newEdges = [[Edge]]()
+        var newEdges = Self.createEmptyEdgesMatrix(quantity: nodes.count)
         
         for sourceNode in nodes {
-            var destNodesQuant = Int.random(in: 1..<nodes.count)
+            if sourceNode.isHidden { continue }
+            let destNodes = nodes.filter { !$0.isHidden && $0 != sourceNode }
+            var destNodesQuant = destNodes.count
             
             repeat {
-                guard let destNode = nodes.randomElement() else { continue }
-                if destNode == sourceNode { continue }
-                
-                do {
-                    // Create edge
-                    if !edgeConnects(sourceNode: sourceNode,
-                                     destNode: destNode,
-                                     on: newEdges) {
-                        let edge = try Edge(from: sourceNode, to: destNode)
-                        addEdge(edge, on: &newEdges)
-                    } else {
-                        continue
-                    }
-                } catch {
-                    // EdgeError: attempt to draw invalid edge!
+                guard let destNode = destNodes.randomElement() else { continue }
+                if edgeConnects(sourceNode, to: destNode, on: newEdges) {
                     continue
                 }
+                
+                let edge = Edge(from: sourceNode, to: destNode)
+                addEdge(edge, on: &newEdges)
                 
                 destNodesQuant -= 1
             } while (destNodesQuant < 0)
@@ -122,19 +112,22 @@ class Graph: ObservableObject, Copying {
         return newEdges
     }
     
-    // MARK: Existing connections on edges
-    
-    func edgeConnects(sourceNode: Node, destNode: Node) -> Bool {
-        for sourceNodeEdge in edges[sourceNode.id] {
-            if sourceNodeEdge.dest == destNode { return true }
+    static func createEmptyEdgesMatrix(quantity: Int) -> [[Edge]] {
+        var newEdges = [[Edge]]()
+        for _ in 0..<quantity {
+            newEdges.append([Edge]())
         }
-        
-        return false
+        return newEdges
     }
     
-    private func edgeConnects(sourceNode: Node, destNode: Node, on edgesArray: [[Edge]]) -> Bool {
-        #warning("Index out of range")
-        for sourceNodeEdge in edgesArray[sourceNode.id] {
+    // MARK: Existing connections on edges
+    
+    func edgeConnects(_ sourceNode: Node, to destNode: Node) -> Bool {
+        return edgeConnects(sourceNode, to: destNode, on: edges)
+    }
+    
+    private func edgeConnects(_ sourceNode: Node, to destNode: Node, on graphEdges: [[Edge]]) -> Bool {
+        for sourceNodeEdge in graphEdges[sourceNode.id] {
             if sourceNodeEdge.dest == destNode { return true }
         }
         return false

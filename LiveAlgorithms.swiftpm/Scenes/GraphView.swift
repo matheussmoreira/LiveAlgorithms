@@ -28,8 +28,10 @@ struct GraphView: View {
                         }
                         .strokedPath(StrokeStyle(lineWidth: 3))
                         .foregroundColor(.white)
+                        .opacity(0.5)
                         .zIndex(-1)
                         .onTapGesture {
+                            if vm.edgeSourceNode != nil { return }
                             withAnimation {
                                 vm.removeEdge(edge)
                             }

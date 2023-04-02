@@ -81,6 +81,7 @@ class GraphViewViewModel: ObservableObject {
             case .nodeSelection:
                 graph.randomizeNodeSelection()
             case .edgeSelection:
+                #warning("Adição de novas edges (aka no grafo) tá esquisita")
                 randomizeEdgeSelection()
             default: break
         }
@@ -99,48 +100,52 @@ extension GraphViewViewModel {
         if node.isHidden { return }
         
         if edgeSourceNode == nil {
+            // Picking source node
             edgeSourceNode = node
             edgeSourceNode?.type = .visited
         } else {
             do {
                 // Picking dest node
-                let nodeContainsEdge = try edgeConnects(node)
-                if !nodeContainsEdge { connectSourceNodeTo(node) }
+                let sameNode = sourceNodeIsEqualTo(node)
+                if sameNode { return }
+                
+                let alreadyConnected = try edgeConnectsSourceNode(to: node)
+                if alreadyConnected { return }
+                
+                connectSourceNodeTo(node)
             } catch {
                 // EdgeError: there is no source node
             }
         }
     }
     
-    private func edgeConnects(_ destNode: Node) throws -> Bool {
+    private func edgeConnectsSourceNode(to destNode: Node) throws -> Bool {
         guard let edgeSourceNode = edgeSourceNode else {
             throw EdgeError.nilSourceNode
         }
         
-        return graph.edgeConnects(sourceNode: edgeSourceNode, destNode: destNode)
+        return graph.edgeConnects(edgeSourceNode, to: destNode)
     }
     
-    private func connectSourceNodeTo(_ node: Node) {
-        // Does not connect to the same node
+    private func sourceNodeIsEqualTo(_ node: Node) -> Bool {
         if edgeSourceNode == node {
             edgeSourceNode?.type = .notVisited
             edgeSourceNode = nil
-            return
+            return true
         }
+        return false
+    }
+    
+    private func connectSourceNodeTo(_ node: Node) {
+        // Create edge
+        edgeDestNode = node
+        let edge = Edge(from: edgeSourceNode!, to: edgeDestNode!)
+        graph.addEdge(edge)
         
-        do {
-            // Create edge
-            edgeDestNode = node
-            let edge = try Edge(from: edgeSourceNode!, to: edgeDestNode!)
-            graph.addEdge(edge)
-            
-            // Clear selections
-            edgeSourceNode?.type = .notVisited
-            edgeSourceNode = nil
-            edgeDestNode = nil
-        } catch {
-            // EdgeError: attempt to draw invalid edge!
-        }
+        // Clear selections
+        edgeSourceNode?.type = .notVisited
+        edgeSourceNode = nil
+        edgeDestNode = nil
     }
     
     // MARK: Tapping on an edge
@@ -179,9 +184,11 @@ extension GraphViewViewModel {
     func nextStep() {
         switch step {
             case .nodeSelection:
+                #warning("Proibir menos de dois nós")
                 graphStack.push(graph.copy()) // Nodes only
                 step = .edgeSelection
             case .edgeSelection:
+                #warning("Proibir grafo desconexo")
                 graphStack.push(graph.copy()) // Nodes + edges
                 step = .initialFinalNodesSelection
             case .initialFinalNodesSelection:
