@@ -12,13 +12,13 @@ struct TopBar: View {
     var body: some View {
         Rectangle()
             .fill(Color.blackGray)
-        .blur(radius: 10)
-        .overlay {
-            Text(text)
-                .foregroundColor(.white)
-                .fontWeight(.semibold)
-                .font(.title3)
-                .multilineTextAlignment(.center)
-        }
+            .blur(radius: 10)
+            .overlay {
+                Text(text)
+                    .foregroundColor(.white)
+                    .fontWeight(.semibold)
+                    .font(.title3)
+                    .multilineTextAlignment(.center)
+            }
     }
 }

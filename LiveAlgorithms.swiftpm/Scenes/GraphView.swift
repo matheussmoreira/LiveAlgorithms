@@ -45,6 +45,39 @@ struct GraphView: View {
             }
             // MARK: End Graph
             
+            
+            if vm.showTwoNodesAlert {
+                Rectangle()
+                    .fill(Color.blackGray)
+                    .blur(radius: 10)
+                    .overlay {
+                        VStack {
+                            Text("The graph must have at least 2 nodes!")
+                                .foregroundColor(.white)
+                                .fontWeight(.semibold)
+                                .font(.title3)
+                                .multilineTextAlignment(.center)
+                            
+                            Button(action: {
+                                withAnimation {
+                                    vm.showTwoNodesAlert = false
+                                }
+                            }) {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .foregroundColor(.clear)
+                                    .border(Color.white)
+                                    .frame(width: 150, height: 75)
+                                    .overlay {
+                                        Text("Ok")
+                                            .foregroundColor(.white)
+                                            .fontWeight(.semibold)
+                                            .padding()
+                                    }
+                            }
+                        }
+                    }
+            }
+            
             VStack {
                 AppTitleInline()
                     .padding(.top, 32)
@@ -52,6 +85,7 @@ struct GraphView: View {
                 TopBar(text: vm.topBarText)
                     .frame(height: UIHelper.screenHeight * 64/1133)
                     .padding(.top, 32)
+                    .opacity(vm.showTwoNodesAlert ? 0 : 1)
                 
                 // Graph space
                 Spacer()
@@ -82,6 +116,7 @@ struct GraphView: View {
                         Arrow(next: true)
                     }
                 }
+                .opacity(vm.showTwoNodesAlert ? 0 : 1)
                 // MARK: End bottom bar
 
             } // VStack

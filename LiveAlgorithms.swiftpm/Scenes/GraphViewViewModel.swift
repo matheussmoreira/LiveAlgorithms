@@ -20,6 +20,7 @@ class GraphViewViewModel: ObservableObject {
     @Published var finalNode: Node?
     @Published var edgeSourceNode: Node?
     @Published var edgeDestNode: Node?
+    @Published var showTwoNodesAlert = false
     
     // MARK: - Computed Properties
     
@@ -247,7 +248,11 @@ extension GraphViewViewModel {
     func nextStep() {
         switch step {
             case .nodeSelection:
-                #warning("Proibir menos de dois nós")
+                let nodesNumber = graph.nodes.filter({!$0.isHidden}).count
+                if nodesNumber < 2 {
+                    showTwoNodesAlert = true
+                    return
+                }
                 graphStack.push(graph.copy()) // Nodes only
                 step = .edgeSelection
             case .edgeSelection:
