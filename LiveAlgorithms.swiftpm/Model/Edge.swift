@@ -7,12 +7,12 @@
 
 import Foundation
 
-class Edge {
+class Edge: ObservableObject {
     let source: Node
     let dest: Node
-    var sourcePosition: CGPoint
-    var destPosition: CGPoint
-    var weight: Int = 0
+    @Published var sourcePosition: CGPoint
+    @Published var destPosition: CGPoint
+    @Published var weight: Int = 0
     
     var reversed: Edge {
         let rev = Edge(from: dest, to: source)

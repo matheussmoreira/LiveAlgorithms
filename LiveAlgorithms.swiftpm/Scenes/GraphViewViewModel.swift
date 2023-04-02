@@ -137,7 +137,6 @@ class GraphViewViewModel: ObservableObject {
             case .nodeSelection:
                 graph.randomizeNodeSelection()
             case .edgeSelection:
-                #warning("Adição de novas edges (aka grafo) tá esquisita")
                 randomizeEdgeSelection()
             case .initialFinalNodesSelection:
                 randomizeInitialFinalNodesSelection()

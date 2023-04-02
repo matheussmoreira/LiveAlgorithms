@@ -22,19 +22,13 @@ struct GraphView: View {
                     let nodeEdges = vm.graph.edges[i]
                     ForEach(0..<nodeEdges.count, id: \.self) { j in
                         let edge = nodeEdges[j]
-                        Path { path in
-                            path.move(to: edge.sourcePosition)
-                            path.addLine(to: edge.destPosition)
-                        }
-                        .strokedPath(StrokeStyle(lineWidth: 3))
-                        .foregroundColor(.white)
-                        .opacity(0.5)
-                        .zIndex(-1)
-                        .onTapGesture {
-                            withAnimation {
-                                vm.handleEdgeTap(edge)
+                        EdgeView(edge: edge)
+                            .zIndex(-1)
+                            .onTapGesture {
+                                withAnimation {
+                                    vm.handleEdgeTap(edge)
+                                }
                             }
-                        }
                     }
                 }
                 
