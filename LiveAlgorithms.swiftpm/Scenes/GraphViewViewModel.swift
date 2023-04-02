@@ -308,6 +308,7 @@ extension GraphViewViewModel {
                 break
             case .edgeSelection:
                 retrievePreviousGraph() // Nodes only
+                graph.unvisitAllNodes()
                 step = .nodeSelection
             case .initialFinalNodesSelection:
                 clearInitialAndFinalNodes()

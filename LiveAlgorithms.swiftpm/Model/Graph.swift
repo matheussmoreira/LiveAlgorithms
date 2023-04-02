@@ -68,6 +68,14 @@ class Graph: ObservableObject, Copying {
         visitedNodesIds = []
     }
     
+    func unvisitAllNodes() {
+        for node in unhiddenNodes {
+            if node.isVisited {
+                node.setAsNotVisited()
+            }
+        }
+    }
+    
 //    static func delay(secs: Double, action: @escaping () -> Void) {
 //        DispatchQueue.main.asyncAfter(deadline: .now() + secs, execute: {
 //            action()

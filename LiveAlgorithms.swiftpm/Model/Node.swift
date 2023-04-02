@@ -13,13 +13,21 @@ class Node: Identifiable, ObservableObject {
     @Published var type: NodeType = .notVisited
     @Published var place: NodePlace = .normal
     
+    // Types
+    
     var isHidden: Bool {
         return type == .hidden
+    }
+    
+    var isVisited: Bool {
+        return type == .visited
     }
     
     var isNotVisited: Bool {
         return type == .notVisited
     }
+    
+    // Places
     
     var isInitial: Bool {
         return place == .initial
