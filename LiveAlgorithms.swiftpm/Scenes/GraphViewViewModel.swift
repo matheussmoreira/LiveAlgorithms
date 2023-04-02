@@ -311,8 +311,8 @@ extension GraphViewViewModel {
                 graph.unvisitAllNodes()
                 step = .nodeSelection
             case .initialFinalNodesSelection:
-                clearInitialAndFinalNodes()
                 retrievePreviousGraph() // Nodes + edges
+                clearInitialAndFinalNodes()
                 step = .edgeSelection
             case .askForAlgorithmSelection:
                 retrievePreviousGraph() // Nodes + edges + initial/final
