@@ -31,7 +31,11 @@ class Graph: ObservableObject, Copying {
     private var visitedNodesIds = [Int]()
     
     var visitedAllNodes: Bool {
-        return visitedNodesIds.count == nodes.count
+        return visitedNodesIds.count == unhiddenNodes.count
+    }
+    
+    var unhiddenNodes: [Node] {
+        return nodes.filter({!$0.isHidden})
     }
     
 //    var unhiddenNodes: [Node] {

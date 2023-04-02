@@ -117,10 +117,8 @@ class GraphViewViewModel: ObservableObject {
     }
     
     private func randomizeInitialFinalNodesSelection() {
-        let possibleInitialNodes = graph.nodes.filter({!$0.isHidden})
         let possibleFinalNodes = graph.nodes.filter({!$0.isHidden && !$0.isInitial})
-        
-        guard let randomInitial = possibleInitialNodes.randomElement(),
+        guard let randomInitial = graph.unhiddenNodes.randomElement(),
                 let randomFinal = possibleFinalNodes.randomElement() else {
             return
         }
@@ -285,7 +283,7 @@ extension GraphViewViewModel {
     }
     
     private func hasLessThanTwoNodes() -> Bool {
-        let nodesNumber = graph.nodes.filter({!$0.isHidden}).count
+        let nodesNumber = graph.unhiddenNodes.count
         if nodesNumber < 2 {
             showTwoNodesAlert = true
             return true
