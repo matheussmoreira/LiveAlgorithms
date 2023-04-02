@@ -31,9 +31,8 @@ struct GraphView: View {
                         .opacity(0.5)
                         .zIndex(-1)
                         .onTapGesture {
-                            if vm.edgeSourceNode != nil { return }
                             withAnimation {
-                                vm.removeEdge(edge)
+                                vm.handleEdgeTap(edge)
                             }
                         }
                     }
@@ -45,7 +44,7 @@ struct GraphView: View {
                         .position(node.position)
                         .onTapGesture {
                             withAnimation {
-                                handleNodeTap(node)
+                                vm.handleNodeTap(node)
                             }
                         }
                 }
@@ -93,19 +92,6 @@ struct GraphView: View {
 
             } // VStack
         } // ZStack
-    }
-}
-
-extension GraphView {
-    func handleNodeTap(_ node: Node) {
-        switch vm.step {
-            case .nodeSelection:
-                node.toggleHiddenStatus()
-            case .edgeSelection:
-                vm.attemptToConnect(node)
-            default:
-                break
-        }
     }
 }
 

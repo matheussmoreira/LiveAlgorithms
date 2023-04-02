@@ -9,13 +9,15 @@ import Foundation
 
 class GraphViewViewModel: ObservableObject {
     
-    // MARK: Stored Properties
+    // MARK: - Stored Properties
     
     private var graphStack: Stack<Graph>
     
     @Published var graph: Graph
     @Published var step: GraphMakingStep
     @Published var selectedAlgorithm: Algorithm?
+    @Published var initialNode: Node?
+    @Published var finalNode: Node?
     @Published var edgeSourceNode: Node?
     @Published var edgeDestNode: Node?
     
@@ -64,6 +66,51 @@ class GraphViewViewModel: ObservableObject {
         step = .nodeSelection
     }
     
+    // MARK: - Nodes
+    
+    func handleNodeTap(_ node: Node) {
+        switch step {
+            case .nodeSelection:
+                node.toggleHiddenStatus()
+            case .edgeSelection:
+                attemptToConnect(node)
+            case .initialFinalNodesSelection:
+                handleInitialFinalStatus(for: node)
+            default:
+                break
+        }
+    }
+    
+    private func handleInitialFinalStatus(for node: Node) {
+        if initialNode == nil {
+            initialNode = node
+            node.toggleInitialStatus()
+        } else if node.isInitial {
+            initialNode = nil
+            node.toggleInitialStatus()
+        } else if finalNode == nil {
+            finalNode = node
+            node.toggleFinalStatus()
+        } else if node.isFinal {
+            finalNode = nil
+            node.toggleFinalStatus()
+        }
+    }
+    
+    private func randomizeInitialFinalNodesSelection() {
+        let possibleInitialNodes = graph.nodes.filter({!$0.isHidden})
+        let possibleFinalNodes = graph.nodes.filter({!$0.isHidden && !$0.isInitial})
+        
+        guard let randomInitial = possibleInitialNodes.randomElement(),
+                let randomFinal = possibleFinalNodes.randomElement() else {
+            return
+        }
+        
+        clearInitialAndFinalNodes()
+        handleInitialFinalStatus(for: randomInitial)
+        handleInitialFinalStatus(for: randomFinal)
+    }
+    
     // MARK: - Options bar
     
     func clearButtonTapped() {
@@ -72,8 +119,17 @@ class GraphViewViewModel: ObservableObject {
                 graph.retrieveAllNodes()
             case .edgeSelection:
                 removeAllEdges()
+            case .initialFinalNodesSelection:
+                clearInitialAndFinalNodes()
             default: break
         }
+    }
+    
+    private func clearInitialAndFinalNodes() {
+        initialNode?.place = .normal
+        initialNode = nil
+        finalNode?.place = .normal
+        finalNode = nil
     }
     
     func randomButtonTapped() {
@@ -81,21 +137,37 @@ class GraphViewViewModel: ObservableObject {
             case .nodeSelection:
                 graph.randomizeNodeSelection()
             case .edgeSelection:
-                #warning("Adição de novas edges (aka no grafo) tá esquisita")
+                #warning("Adição de novas edges (aka grafo) tá esquisita")
                 randomizeEdgeSelection()
+            case .initialFinalNodesSelection:
+                randomizeInitialFinalNodesSelection()
             default: break
         }
     }
     
 }
 
-// MARK: - Edges
+// MARK: - Edge selection
 
 extension GraphViewViewModel {
     
-    // MARK: Tapping on the nodes
+    // MARK: Tapping on an edge
     
-    func attemptToConnect(_ node: Node) {
+    func handleEdgeTap(_ edge: Edge) {
+        if edgeSourceNode != nil { return }
+        if step != .edgeSelection { return }
+        removeEdge(edge)
+    }
+    
+    private func removeEdge(_ edge: Edge) {
+        let copy = graph.copy()
+        copy.removeEdge(edge)
+        graph = copy
+    }
+    
+    // MARK: Tapping on a node
+    
+    private func attemptToConnect(_ node: Node) {
         if step != .edgeSelection { return }
         if node.isHidden { return }
         
@@ -146,14 +218,6 @@ extension GraphViewViewModel {
         edgeSourceNode?.type = .notVisited
         edgeSourceNode = nil
         edgeDestNode = nil
-    }
-    
-    // MARK: Tapping on an edge
-    
-    func removeEdge(_ edge: Edge) {
-        let copy = graph.copy()
-        copy.removeEdge(edge)
-        graph = copy
     }
     
     // MARK: Options bar handling
@@ -209,6 +273,7 @@ extension GraphViewViewModel {
                 retrievePreviousGraph() // Nodes only
                 step = .nodeSelection
             case .initialFinalNodesSelection:
+                clearInitialAndFinalNodes()
                 retrievePreviousGraph() // Nodes + edges
                 step = .edgeSelection
             case .askForAlgorithmSelection:

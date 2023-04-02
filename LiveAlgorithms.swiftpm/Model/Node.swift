@@ -17,6 +17,14 @@ class Node: Identifiable, ObservableObject {
         return type == .hidden
     }
     
+    var isInitial: Bool {
+        return place == .initial
+    }
+    
+    var isFinal: Bool {
+        return place == .final
+    }
+    
     init(id: Int, position: CGPoint) {
         self.id = id
         self.position = position
@@ -32,13 +40,29 @@ class Node: Identifiable, ObservableObject {
         }
     }
     
-    func showAsNotVisited() {
-        type = .notVisited
-    }
-    
     func randomizeSelection() {
         let types: [NodeType] = [.hidden, .notVisited]
         type = types.randomElement() ?? .hidden
+    }
+    
+    func setAsNotVisited() {
+        type = .notVisited
+    }
+    
+    func toggleInitialStatus() {
+        if place == .initial {
+            place = .normal
+        } else {
+            place = .initial
+        }
+    }
+    
+    func toggleFinalStatus() {
+        if place == .final {
+            place = .normal
+        } else {
+            place = .final
+        }
     }
 }
 

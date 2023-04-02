@@ -61,7 +61,7 @@ class Graph: ObservableObject, Copying {
     }
     
     func retrieveAllNodes() {
-        nodes.forEach { $0.showAsNotVisited() }
+        nodes.forEach { $0.setAsNotVisited() }
     }
     
     func randomizeNodeSelection() {
@@ -74,8 +74,11 @@ class Graph: ObservableObject, Copying {
 //        edges.remove(at: node.id)
 //    }
     
-    // MARK: - Edges
-    
+}
+
+// MARK: - Edges
+
+extension Graph {
     // MARK: Create edges
     
     func addEdge(_ edge: Edge) {
