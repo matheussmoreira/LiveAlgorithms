@@ -17,6 +17,10 @@ class Node: Identifiable, ObservableObject {
         return type == .hidden
     }
     
+    var isNotVisited: Bool {
+        return type == .notVisited
+    }
+    
     var isInitial: Bool {
         return place == .initial
     }
@@ -43,6 +47,10 @@ class Node: Identifiable, ObservableObject {
     func randomizeSelection() {
         let types: [NodeType] = [.hidden, .notVisited]
         type = types.randomElement() ?? .hidden
+    }
+    
+    func setAsVisited() {
+        type = .visited
     }
     
     func setAsNotVisited() {

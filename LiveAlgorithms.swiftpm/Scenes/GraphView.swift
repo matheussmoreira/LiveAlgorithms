@@ -46,27 +46,26 @@ struct GraphView: View {
             // MARK: End Graph
             
             
-            if vm.showTwoNodesAlert {
+            if vm.showTwoNodesAlert || vm.showDisconnectedGraphAlert {
                 Rectangle()
                     .fill(Color.blackGray)
                     .blur(radius: 10)
                     .overlay {
                         VStack {
-                            Text("The graph must have at least 2 nodes!")
+                            Text(vm.alertText)
                                 .foregroundColor(.white)
                                 .fontWeight(.semibold)
                                 .font(.title3)
                                 .multilineTextAlignment(.center)
+                                .padding()
                             
                             Button(action: {
-                                withAnimation {
-                                    vm.showTwoNodesAlert = false
-                                }
+                                withAnimation { vm.hideAlert() }
                             }) {
                                 RoundedRectangle(cornerRadius: 4)
                                     .foregroundColor(.clear)
                                     .border(Color.white)
-                                    .frame(width: 150, height: 75)
+                                    .frame(width: 100, height: 50)
                                     .overlay {
                                         Text("Ok")
                                             .foregroundColor(.white)

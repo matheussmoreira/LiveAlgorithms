@@ -28,6 +28,11 @@ class Graph: ObservableObject, Copying {
     
     @Published var nodes: [Node]
     @Published var edges: [[Edge]]
+    private var visitedNodesIds = [Int]()
+    
+    var visitedAllNodes: Bool {
+        return visitedNodesIds.count == nodes.count
+    }
     
 //    var unhiddenNodes: [Node] {
 //        return nodes.filter({ $0.type != .hidden })
@@ -52,6 +57,18 @@ class Graph: ObservableObject, Copying {
     required convenience init(_ prototype: Graph) {
         self.init(nodes: prototype.nodes, edges: prototype.edges)
     }
+    
+    // MARK: - Other methods
+    
+    func resetNodesVisitation() {
+        visitedNodesIds = []
+    }
+    
+//    static func delay(secs: Double, action: @escaping () -> Void) {
+//        DispatchQueue.main.asyncAfter(deadline: .now() + secs, execute: {
+//            action()
+//        })
+//    }
     
     // MARK: - Nodes
     
@@ -90,6 +107,10 @@ extension Graph {
         graphEdges[edge.source.id].append(edge)
         graphEdges[edge.dest.id].append(rev)
     }
+    
+    #warning("Não gerar grafo desconexo!")
+    // Estratégia: primeiro criar um fio ligando todos os nós
+    // Depois gerar aleatoriamente as arestas
     
     func getRandomEdges() -> [[Edge]] {
         var newEdges = Self.createEmptyEdgesMatrix(quantity: nodes.count)
@@ -192,5 +213,50 @@ extension Graph {
         }
         
         return Graph(nodes: nodes)
+    }
+}
+
+// MARK: - Algorithms
+
+extension Graph {
+    func checkForDisconnections(node: Node? = nil) {
+        var checkingNode = node
+        if checkingNode == nil { checkingNode = nodes.randomElement() }
+        guard let checkingNode = checkingNode else { return }
+        
+        visitedNodesIds.append(checkingNode.id)
+        
+        for edge in edges[checkingNode.id] {
+            if !visitedNodesIds.contains(checkingNode.id) {
+                self.checkForDisconnections(node: edge.dest)
+            }
+        }
+    }
+    
+    func dfs(node: Node, counting: Bool = false) {
+        node.setAsVisited()
+        if node.isFinal { return }
+        
+        for edge in edges[node.id] {
+            if edge.dest.isNotVisited {
+                self.dfs(node: edge.dest)
+            }
+        }
+    }
+    
+    func bfs(node: Node) {
+        var queue: Queue<Node> = Queue()
+        queue.enqueue(node)
+        node.setAsVisited()
+        
+        while(!queue.isEmpty) {
+            guard let dequeuedNode = queue.dequeue() else { break }
+            for edge in edges[dequeuedNode.id] {
+                if edge.dest.isNotVisited {
+                    queue.enqueue(edge.dest)
+                    edge.dest.setAsVisited()
+                }
+            }
+        }
     }
 }

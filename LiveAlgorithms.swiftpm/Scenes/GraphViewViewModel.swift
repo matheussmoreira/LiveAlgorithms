@@ -21,6 +21,7 @@ class GraphViewViewModel: ObservableObject {
     @Published var edgeSourceNode: Node?
     @Published var edgeDestNode: Node?
     @Published var showTwoNodesAlert = false
+    @Published var showDisconnectedGraphAlert = false
     
     // MARK: - Computed Properties
     
@@ -59,12 +60,29 @@ class GraphViewViewModel: ObservableObject {
         }
     }
     
+    var alertText: String {
+        if showTwoNodesAlert {
+            return "The graph must have at least 2 nodes!"
+        } else if showDisconnectedGraphAlert {
+            return """
+            The graph is disconnected!\n
+            There must not be either a node or a subgraph disconnected from the whole.
+            """
+        }
+        return ""
+    }
+    
     // MARK: - Init
     
     init() {
         graph = Graph.generate()
         graphStack = Stack()
         step = .nodeSelection
+    }
+    
+    func hideAlert() {
+        showTwoNodesAlert = false
+        showDisconnectedGraphAlert = false
     }
     
     // MARK: - Nodes
@@ -248,25 +266,42 @@ extension GraphViewViewModel {
     func nextStep() {
         switch step {
             case .nodeSelection:
-                let nodesNumber = graph.nodes.filter({!$0.isHidden}).count
-                if nodesNumber < 2 {
-                    showTwoNodesAlert = true
-                    return
-                }
+                if hasLessThanTwoNodes() { return }
                 graphStack.push(graph.copy()) // Nodes only
                 step = .edgeSelection
             case .edgeSelection:
-                #warning("Proibir grafo desconexo")
+                if foundDisconnectedGraph() { return }
                 graphStack.push(graph.copy()) // Nodes + edges
                 step = .initialFinalNodesSelection
             case .initialFinalNodesSelection:
                 graphStack.push(graph.copy()) // Nodes + edges + initial/final
                 step = .askForAlgorithmSelection
+                graph.dfs(node: initialNode!)
             case .askForAlgorithmSelection:
                 step = .algorithmSelection
             default:
                 break
         }
+    }
+    
+    private func hasLessThanTwoNodes() -> Bool {
+        let nodesNumber = graph.nodes.filter({!$0.isHidden}).count
+        if nodesNumber < 2 {
+            showTwoNodesAlert = true
+            return true
+        }
+        return false
+    }
+    
+    private func foundDisconnectedGraph() -> Bool {
+        graph.checkForDisconnections()
+        if !graph.visitedAllNodes {
+            showDisconnectedGraphAlert = true
+            graph.resetNodesVisitation()
+            return true
+        }
+        graph.resetNodesVisitation()
+        return false
     }
     
     func previousStep() {
