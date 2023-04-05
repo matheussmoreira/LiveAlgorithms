@@ -117,11 +117,9 @@ class GraphViewViewModel: ObservableObject {
     }
     
     private func randomizeInitialFinalNodesSelection() {
-        let possibleFinalNodes = graph.nodes.filter({!$0.isHidden && !$0.isInitial})
-        guard let randomInitial = graph.unhiddenNodes.randomElement(),
-                let randomFinal = possibleFinalNodes.randomElement() else {
-            return
-        }
+        guard let randomInitial = graph.unhiddenNodes.randomElement() else { return }
+        let possibleFinalNodes = graph.unhiddenNodes.filter({$0 != randomInitial})
+        guard let randomFinal = possibleFinalNodes.randomElement() else { return }
         
         clearInitialAndFinalNodes()
         handleInitialFinalStatus(for: randomInitial)
@@ -268,6 +266,7 @@ extension GraphViewViewModel {
                 graphStack.push(graph.copy()) // Nodes only
                 step = .edgeSelection
             case .edgeSelection:
+                #warning("Parece estar errado")
                 if foundDisconnectedGraph() { return }
                 graphStack.push(graph.copy()) // Nodes + edges
                 step = .initialFinalNodesSelection

@@ -126,21 +126,18 @@ extension Graph {
     
     func getRandomEdges() -> [[Edge]] {
         var newEdges = Self.createEmptyEdgesMatrix(quantity: nodes.count)
+        let sourceNodes = unhiddenNodes
         
-        for sourceNode in nodes {
-            if sourceNode.isHidden { continue }
-            let destNodes = nodes.filter { !$0.isHidden && $0 != sourceNode }
+        for sourceNode in sourceNodes {
+            let destNodes = unhiddenNodes.filter { $0 != sourceNode }
             var destNodesQuant = destNodes.count
             
             repeat {
                 guard let destNode = destNodes.randomElement() else { continue }
-                if edgeConnects(sourceNode, to: destNode, on: newEdges) {
-                    continue
-                }
+                if edgeConnects(sourceNode, to: destNode, on: newEdges) { continue }
                 
                 let edge = Edge(from: sourceNode, to: destNode)
                 addEdge(edge, on: &newEdges)
-                
                 destNodesQuant -= 1
             } while (destNodesQuant < 0)
         }
@@ -233,7 +230,7 @@ extension Graph {
 extension Graph {
     func checkForDisconnections(node: Node? = nil) {
         var checkingNode = node
-        if checkingNode == nil { checkingNode = nodes.randomElement() }
+        if checkingNode == nil { checkingNode = unhiddenNodes.randomElement() }
         guard let checkingNode = checkingNode else { return }
         
         visitedNodesIds.append(checkingNode.id)
