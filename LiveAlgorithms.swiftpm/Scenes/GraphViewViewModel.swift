@@ -100,6 +100,15 @@ class GraphViewViewModel: ObservableObject {
         }
     }
     
+    private func hasLessThanTwoNodes() -> Bool {
+        let nodesNumber = graph.unhiddenNodes.count
+        if nodesNumber < 2 {
+            showTwoNodesAlert = true
+            return true
+        }
+        return false
+    }
+    
     private func handleInitialFinalStatus(for node: Node) {
         if initialNode == nil {
             initialNode = node
@@ -247,6 +256,17 @@ extension GraphViewViewModel {
         copy.edges = copy.getRandomEdges()
         graph = copy
     }
+    
+    private func foundDisconnectedGraph() -> Bool {
+        graph.checkForDisconnections()
+        if !graph.visitedAllNodes {
+            showDisconnectedGraphAlert = true
+            graph.resetNodesVisitation()
+            return true
+        }
+        graph.resetNodesVisitation()
+        return false
+    }
 }
 
 // MARK: - Navigation
@@ -265,40 +285,23 @@ extension GraphViewViewModel {
                 if hasLessThanTwoNodes() { return }
                 graphStack.push(graph.copy()) // Nodes only
                 step = .edgeSelection
+                
             case .edgeSelection:
                 #warning("Parece estar errado")
-                if foundDisconnectedGraph() { return }
+//                if foundDisconnectedGraph() { return }
                 graphStack.push(graph.copy()) // Nodes + edges
                 step = .initialFinalNodesSelection
+                
             case .initialFinalNodesSelection:
                 graphStack.push(graph.copy()) // Nodes + edges + initial/final
                 step = .askForAlgorithmSelection
-                graph.dfs(node: initialNode!)
+                
             case .askForAlgorithmSelection:
                 step = .algorithmSelection
+                
             default:
                 break
         }
-    }
-    
-    private func hasLessThanTwoNodes() -> Bool {
-        let nodesNumber = graph.unhiddenNodes.count
-        if nodesNumber < 2 {
-            showTwoNodesAlert = true
-            return true
-        }
-        return false
-    }
-    
-    private func foundDisconnectedGraph() -> Bool {
-        graph.checkForDisconnections()
-        if !graph.visitedAllNodes {
-            showDisconnectedGraphAlert = true
-            graph.resetNodesVisitation()
-            return true
-        }
-        graph.resetNodesVisitation()
-        return false
     }
     
     func previousStep() {
