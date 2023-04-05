@@ -258,7 +258,12 @@ extension GraphViewViewModel {
     }
     
     private func foundDisconnectedGraph() -> Bool {
-        graph.checkForDisconnections()
+        guard let randomNode = graph.unhiddenNodes.randomElement() else {
+            return false
+        }
+        
+        graph.dfs(startingFrom: randomNode)
+        
         if !graph.visitedAllNodes {
             showDisconnectedGraphAlert = true
             graph.resetNodesVisitation()
@@ -287,8 +292,7 @@ extension GraphViewViewModel {
                 step = .edgeSelection
                 
             case .edgeSelection:
-                #warning("Parece estar errado")
-//                if foundDisconnectedGraph() { return }
+                if foundDisconnectedGraph() { return }
                 graphStack.push(graph.copy()) // Nodes + edges
                 step = .initialFinalNodesSelection
                 

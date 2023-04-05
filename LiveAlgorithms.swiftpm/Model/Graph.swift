@@ -7,16 +7,6 @@
 
 import Foundation
 
-public protocol Copying: AnyObject {
-    init(_ prototype: Self)
-}
-
-extension Copying {
-    public func copy() -> Self {
-        return type(of: self).init(self)
-    }
-}
-
 class Graph: ObservableObject, Copying {
     // MARK: - Type Properties
     
@@ -58,20 +48,6 @@ class Graph: ObservableObject, Copying {
         self.init(nodes: prototype.nodes, edges: prototype.edges)
     }
     
-    // MARK: - Other methods
-    
-    func resetNodesVisitation() {
-        visitedNodesIds = []
-    }
-    
-    func unvisitAllNodes() {
-        for node in unhiddenNodes {
-            if node.isVisited {
-                node.setAsNotVisited()
-            }
-        }
-    }
-    
 //    static func delay(secs: Double, action: @escaping () -> Void) {
 //        DispatchQueue.main.asyncAfter(deadline: .now() + secs, execute: {
 //            action()
@@ -93,17 +69,26 @@ class Graph: ObservableObject, Copying {
         nodes.forEach { $0.randomizeSelection() }
     }
     
-//    func removeNode(_ node: Node) {
-//        nodes.remove(at: node.id)
-//        for e in edges[node.id] { removeEdge(e) }
-//        edges.remove(at: node.id)
-//    }
+    // MARK: Visitation
+    
+    func resetNodesVisitation() {
+        visitedNodesIds = []
+    }
+    
+    func unvisitAllNodes() {
+        for node in unhiddenNodes {
+            if node.isVisited {
+                node.setAsNotVisited()
+            }
+        }
+    }
     
 }
 
 // MARK: - Edges
 
 extension Graph {
+    
     // MARK: Create edges
     
     func addEdge(_ edge: Edge) {
@@ -116,29 +101,44 @@ extension Graph {
         graphEdges[edge.dest.id].append(rev)
     }
     
-    #warning("Não gerar grafo desconexo!")
-    // Estratégia: primeiro criar um fio ligando todos os nós
-    // Depois gerar aleatoriamente as arestas
-    
+    #warning("Algoritmo zoado")
     func getRandomEdges() -> [[Edge]] {
-        var newEdges = Self.createEmptyEdgesMatrix(quantity: nodes.count)
-        let sourceNodes = unhiddenNodes
+        var randomEdges = generateRandomSpanningTree()
+//        let nodes = unhiddenNodes
+//        
+//        for sourceNode in nodes {
+//            let destNodes = unhiddenNodes.filter {$0 != sourceNode}
+//            var destNodesQuant = Int.random(in: 0...destNodes.count)
+//            
+//            repeat {
+//                guard let destNode = destNodes.randomElement() else { break }
+//                if edgeConnects(sourceNode, to: destNode, on: randomEdges) { continue }
+//                
+//                let edge = Edge(from: sourceNode, to: destNode)
+//                addEdge(edge, on: &randomEdges)
+//                destNodesQuant -= 1
+//            } while (destNodesQuant > 0)
+//        }
         
-        for sourceNode in sourceNodes {
-            let destNodes = unhiddenNodes.filter { $0 != sourceNode }
-            var destNodesQuant = destNodes.count
-            
-            repeat {
-                guard let destNode = destNodes.randomElement() else { continue }
-                if edgeConnects(sourceNode, to: destNode, on: newEdges) { continue }
-                
-                let edge = Edge(from: sourceNode, to: destNode)
-                addEdge(edge, on: &newEdges)
-                destNodesQuant -= 1
-            } while (destNodesQuant < 0)
+        return randomEdges
+    }
+    
+    private func generateRandomSpanningTree() -> [[Edge]] {
+        var edgesMatrix = Self.createEmptyEdgesMatrix(quantity: nodes.count)
+        var nodes = unhiddenNodes
+        
+        guard var sourceNode = nodes.randomElement() else { return edgesMatrix }
+        nodes.removeAll(where: {$0.id == sourceNode.id})
+        
+        while !nodes.isEmpty {
+            guard let destNode = nodes.randomElement() else { break }
+            let edge = Edge(from: sourceNode, to: destNode)
+            addEdge(edge, on: &edgesMatrix)
+            nodes.removeAll(where: {$0.id == destNode.id})
+            sourceNode = destNode
         }
         
-        return newEdges
+        return edgesMatrix
     }
     
     static func createEmptyEdgesMatrix(quantity: Int) -> [[Edge]] {
@@ -149,7 +149,7 @@ extension Graph {
         return newEdges
     }
     
-    // MARK: Existing connections on edges
+    // MARK: Existing connections
     
     func edgeConnects(_ sourceNode: Node, to destNode: Node) -> Bool {
         return edgeConnects(sourceNode, to: destNode, on: edges)

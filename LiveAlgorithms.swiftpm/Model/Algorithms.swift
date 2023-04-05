@@ -10,27 +10,14 @@ import Foundation
 // MARK: - Algorithms
 
 extension Graph {
-    func checkForDisconnections(node: Node? = nil) {
-        var checkingNode = node
-        if checkingNode == nil { checkingNode = unhiddenNodes.randomElement() }
-        guard let checkingNode = checkingNode else { return }
-        
-        visitedNodesIds.append(checkingNode.id)
-        
-        for edge in edges[checkingNode.id] {
-            if !visitedNodesIds.contains(checkingNode.id) {
-                self.checkForDisconnections(node: edge.dest)
-            }
-        }
-    }
     
-    func dfs(node: Node, counting: Bool = false) {
-        node.setAsVisited()
+    func dfs(startingFrom node: Node) {
+        visitedNodesIds.append(node.id)
         if node.isFinal { return }
         
         for edge in edges[node.id] {
-            if edge.dest.isNotVisited {
-                self.dfs(node: edge.dest)
+            if !visitedNodesIds.contains(edge.dest.id) {
+                dfs(startingFrom: edge.dest)
             }
         }
     }
@@ -38,16 +25,17 @@ extension Graph {
     func bfs(node: Node) {
         var queue: Queue<Node> = Queue()
         queue.enqueue(node)
-        node.setAsVisited()
+        visitedNodesIds.append(node.id)
         
         while(!queue.isEmpty) {
             guard let dequeuedNode = queue.dequeue() else { break }
             for edge in edges[dequeuedNode.id] {
-                if edge.dest.isNotVisited {
+                if !visitedNodesIds.contains(edge.dest.id) {
                     queue.enqueue(edge.dest)
-                    edge.dest.setAsVisited()
+                    visitedNodesIds.append(edge.dest.id)
                 }
             }
         }
     }
+    
 }
