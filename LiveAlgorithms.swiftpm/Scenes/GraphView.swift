@@ -45,7 +45,7 @@ struct GraphView: View {
             }
             // MARK: End Graph
             
-            
+            // MARK: Alert
             if vm.showTwoNodesAlert || vm.showDisconnectedGraphAlert {
                 Rectangle()
                     .fill(Color.blackGray)
@@ -76,6 +76,7 @@ struct GraphView: View {
                         }
                     }
             }
+            // MARK: End Alert
             
             VStack {
                 AppTitleInline()
@@ -86,7 +87,7 @@ struct GraphView: View {
                     .padding(.top, 32)
                     .opacity(vm.showTwoNodesAlert ? 0 : 1)
                 
-                // Graph space
+                // MARK: Graph space
                 Spacer()
                 
                 // MARK: Bottom bar
@@ -103,8 +104,13 @@ struct GraphView: View {
                     .disabled(vm.previousStepButtonIsDisabled)
                     
                     // Options bar
-                    NodeSelectionOptionsBar(vm: vm)
-                        .padding()
+                    if vm.isBuildingGraph {
+                        BuildGraphOptionsBar(vm: vm)
+                            .padding()
+                    } else {
+                        PickAlgorithmOptionsBar(vm: vm)
+                            .padding()
+                    }
                     
                     // Next step
                     Button(action: {

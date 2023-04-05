@@ -33,6 +33,14 @@ class GraphViewViewModel: ObservableObject {
         step == .nodeSelection
     }
     
+    var isBuildingGraph: Bool {
+        return step == .nodeSelection
+        || step == .edgeSelection
+        || step == .initialFinalNodesSelection
+    }
+    
+    // MARK: - Texts
+    
     var topBarText: String {
         switch step {
             case .nodeSelection:

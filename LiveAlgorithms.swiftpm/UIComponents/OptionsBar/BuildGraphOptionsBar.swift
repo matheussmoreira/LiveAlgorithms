@@ -1,5 +1,5 @@
 //
-//  NodeSelectionOptionsBar.swift
+//  BuildGraphOptionsBar.swift
 //  
 //
 //  Created by Matheus S. Moreira on 31/03/23.
@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-struct NodeSelectionOptionsBar: View {
-//    @ObservedObject var graph: Graph
+struct BuildGraphOptionsBar: View {
     @ObservedObject var vm: GraphViewViewModel
     
     private let w = UIHelper.screenWidth * 415/744
@@ -35,25 +34,5 @@ struct NodeSelectionOptionsBar: View {
         }
         .frame(height: h)
         .frame(maxWidth: w)
-    }
-}
-
-struct OptionsButton: View {
-    var image: Image
-    var text: String
-    var action: () -> Void
-    
-    var body: some View {
-        Button(action: self.action ) {
-            HStack {
-                image
-                    .foregroundColor(.white)
-                    .font(.title2)
-                Text(text)
-                    .foregroundColor(.white)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-            }
-        }
     }
 }
