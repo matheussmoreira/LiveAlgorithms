@@ -101,24 +101,24 @@ extension Graph {
         graphEdges[edge.dest.id].append(rev)
     }
     
-    #warning("Algoritmo zoado")
     func getRandomEdges() -> [[Edge]] {
         var randomEdges = generateRandomSpanningTree()
-//        let nodes = unhiddenNodes
-//        
-//        for sourceNode in nodes {
-//            let destNodes = unhiddenNodes.filter {$0 != sourceNode}
-//            var destNodesQuant = Int.random(in: 0...destNodes.count)
-//            
-//            repeat {
-//                guard let destNode = destNodes.randomElement() else { break }
-//                if edgeConnects(sourceNode, to: destNode, on: randomEdges) { continue }
-//                
-//                let edge = Edge(from: sourceNode, to: destNode)
-//                addEdge(edge, on: &randomEdges)
-//                destNodesQuant -= 1
-//            } while (destNodesQuant > 0)
-//        }
+        
+        let nodes = unhiddenNodes
+        
+        for sourceNode in nodes {
+            let destNodes = unhiddenNodes.filter {$0 != sourceNode}
+            var destNodesQuant = 1 // Int.random(in: 0...destNodes.count)
+            
+            while (destNodesQuant > 0) {
+                guard let destNode = destNodes.randomElement() else { break }
+                if edgeConnects(sourceNode, to: destNode, on: randomEdges) { continue }
+                
+                let edge = Edge(from: sourceNode, to: destNode)
+                addEdge(edge, on: &randomEdges)
+                destNodesQuant -= 1
+            }
+        }
         
         return randomEdges
     }
