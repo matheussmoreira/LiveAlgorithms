@@ -22,7 +22,9 @@ struct PickAlgorithmOptionsBar: View {
             HStack {
                 Spacer()
                 OptionsButton(image: .turnUp, text: "Select algorithm") {
-                    withAnimation { }
+                    withAnimation {
+                        vm.isSelectingAlgorithm = true
+                    }
                 }.padding(.trailing)
                 Spacer()
                 

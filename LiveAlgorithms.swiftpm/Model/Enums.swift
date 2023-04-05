@@ -36,9 +36,11 @@ enum GraphMakingStep: CaseIterable {
     case algorithmSelected
 }
 
-enum Algorithm: String {
-    case dfs = "Depth-first search"
+enum Algorithm: String, CaseIterable, Identifiable {
     case bfs = "Breadth-first search"
+    case dfs = "Depth-first search"
     case djikstra = "Djikstra's shortest path"
     case mst = "Prim's minimum spanning tree"
+    
+    var id: String { self.rawValue }
 }

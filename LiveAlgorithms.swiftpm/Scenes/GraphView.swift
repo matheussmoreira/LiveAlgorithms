@@ -93,35 +93,47 @@ struct GraphView: View {
                 // MARK: Bottom bar
                 HStack {
                     // Previous step
-                    Button(action: {
-                        withAnimation {
-                            vm.previousStep()
+                    if !vm.isSelectingAlgorithm {
+                        Button(action: {
+                            withAnimation {
+                                vm.previousStep()
+                            }
+                        }) {
+                            Arrow(next: false)
                         }
-                    }) {
-                        Arrow(next: false)
+                        .opacity(vm.previousStepButtonOpacity)
+                        .disabled(vm.previousStepButtonIsDisabled)
                     }
-                    .opacity(vm.previousStepButtonOpacity)
-                    .disabled(vm.previousStepButtonIsDisabled)
+                    
                     
                     // Options bar
                     if vm.isBuildingGraph {
                         BuildGraphOptionsBar(vm: vm)
                             .padding()
                     } else {
-                        PickAlgorithmOptionsBar(vm: vm)
-                            .padding()
+                        if !vm.isSelectingAlgorithm {
+                            PickAlgorithmOptionsBar(vm: vm)
+                                .padding()
+                        } else {
+                            AlgorithmsList(vm: vm)
+                                .padding()
+                        }
+                        
                     }
                     
                     // Next step
-                    Button(action: {
-                        withAnimation {
-                            vm.nextStep()
+                    if !vm.isSelectingAlgorithm {
+                        Button(action: {
+                            withAnimation {
+                                vm.nextStep()
+                            }
+                        }) {
+                            Arrow(next: true)
                         }
-                    }) {
-                        Arrow(next: true)
                     }
                 }
-                .opacity(vm.showTwoNodesAlert ? 0 : 1)
+                .opacity(vm.showTwoNodesAlert
+                         || vm.showDisconnectedGraphAlert ? 0 : 1)
                 // MARK: End bottom bar
 
             } // VStack

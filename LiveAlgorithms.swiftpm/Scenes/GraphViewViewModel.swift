@@ -22,6 +22,7 @@ class GraphViewViewModel: ObservableObject {
     @Published var edgeDestNode: Node?
     @Published var showTwoNodesAlert = false
     @Published var showDisconnectedGraphAlert = false
+    @Published var isSelectingAlgorithm = false
     
     // MARK: - Computed Properties
     
