@@ -7,24 +7,42 @@
 
 import Foundation
 
-enum NodeType {
-    case hidden, notVisited, visited
-}
-
-enum NodePlace {
-    case initial, normal, final
-}
-
 class Node: Identifiable, ObservableObject {
     let id: Int
     let position: CGPoint
     @Published var type: NodeType = .notVisited
     @Published var place: NodePlace = .normal
     
+    // Types
+    
+    var isHidden: Bool {
+        return type == .hidden
+    }
+    
+    var isVisited: Bool {
+        return type == .visited
+    }
+    
+    var isNotVisited: Bool {
+        return type == .notVisited
+    }
+    
+    // Places
+    
+    var isInitial: Bool {
+        return place == .initial
+    }
+    
+    var isFinal: Bool {
+        return place == .final
+    }
+    
     init(id: Int, position: CGPoint) {
         self.id = id
         self.position = position
     }
+    
+    // MARK: - Methods
     
     func toggleHiddenStatus() {
         if type == .hidden {
@@ -34,13 +52,33 @@ class Node: Identifiable, ObservableObject {
         }
     }
     
-    func showAsNotVisited() {
+    func randomizeSelection() {
+        let types: [NodeType] = [.hidden, .notVisited]
+        type = types.randomElement() ?? .hidden
+    }
+    
+    func setAsVisited() {
+        type = .visited
+    }
+    
+    func setAsNotVisited() {
         type = .notVisited
     }
     
-    func randomizeType() {
-        let types: [NodeType] = [.hidden, .notVisited]
-        type = types.randomElement() ?? .hidden
+    func toggleInitialStatus() {
+        if place == .initial {
+            place = .normal
+        } else {
+            place = .initial
+        }
+    }
+    
+    func toggleFinalStatus() {
+        if place == .final {
+            place = .normal
+        } else {
+            place = .final
+        }
     }
 }
 

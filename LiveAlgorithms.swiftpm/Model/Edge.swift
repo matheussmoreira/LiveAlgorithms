@@ -7,33 +7,20 @@
 
 import Foundation
 
-enum EdgeInitError: Error {
-    case equalSourceDest
-}
-
-class Edge {
+class Edge: ObservableObject {
     let source: Node
     let dest: Node
-    var sourcePosition: CGPoint
-    var destPosition: CGPoint
-    var weight: Int = 1
+    @Published var sourcePosition: CGPoint
+    @Published var destPosition: CGPoint
+    @Published var weight: Int = 0
     
-    var reversed: Edge? {
-        do {
-            let e = try Edge(from: dest, to: source)
-            e.weight = weight
-            return e
-        } catch {
-            print("Error: attempt to reverse invalid edge")
-            return nil
-        }
+    var reversed: Edge {
+        let rev = Edge(from: dest, to: source)
+        rev.weight = weight
+        return rev
     }
     
-    init(from source: Node, to dest: Node) throws {
-        if source == dest {
-            throw EdgeInitError.equalSourceDest
-        }
-        
+    init(from source: Node, to dest: Node) {
         self.source = source
         self.dest = dest
         self.sourcePosition = source.position

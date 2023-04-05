@@ -26,7 +26,7 @@ struct NodeView: View {
             if nodeIsUnhidden {
                 NormalNode(isVisited: nodeIsVisited)
             } else {
-                HiddenNode()
+                HiddenNode().zIndex(-2)
             }
         }
     }
