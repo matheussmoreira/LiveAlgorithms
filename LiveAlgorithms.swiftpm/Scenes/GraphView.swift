@@ -66,35 +66,8 @@ struct GraphView: View {
             // MARK: End Graph
             
             // MARK: Alert
-            if vm.showTwoNodesAlert || vm.showDisconnectedGraphAlert {
-                Rectangle()
-                    .fill(Color.blackGray)
-                    .blur(radius: 10)
-                    .overlay {
-                        VStack {
-                            Text(vm.alertText)
-                                .foregroundColor(.white)
-                                .fontWeight(.semibold)
-                                .font(.title3)
-                                .multilineTextAlignment(.center)
-                                .padding()
-                            
-                            Button(action: {
-                                withAnimation { vm.hideAlert() }
-                            }) {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .foregroundColor(.clear)
-                                    .border(Color.white)
-                                    .frame(width: 100, height: 50)
-                                    .overlay {
-                                        Text("Ok")
-                                            .foregroundColor(.white)
-                                            .fontWeight(.semibold)
-                                            .padding()
-                                    }
-                            }
-                        }
-                    }
+            if vm.showAlert {
+                AlertView(vm: vm)
             }
             // MARK: End Alert
             
@@ -113,7 +86,7 @@ struct GraphView: View {
                 // MARK: Bottom bar
                 HStack {
                     // Previous step
-                    if !vm.isSelectingAlgorithm || vm.isSettingEdgesWeights {
+                    if vm.showPreviousButton {
                         Button(action: {
                             withAnimation {
                                 vm.previousStep()
@@ -142,7 +115,7 @@ struct GraphView: View {
                     }
                     
                     // Next step
-                    if !vm.isSelectingAlgorithm && !vm.isSettingEdgesWeights {
+                    if vm.showNextButton {
                         Button(action: {
                             withAnimation {
                                 vm.nextStep()
@@ -152,8 +125,8 @@ struct GraphView: View {
                         }
                     }
                 }
-                .opacity(vm.showTwoNodesAlert
-                         || vm.showDisconnectedGraphAlert ? 0 : 1)
+                .opacity(vm.showAlert ? 0 : 1)
+                
                 // MARK: End bottom bar
 
             } // VStack
