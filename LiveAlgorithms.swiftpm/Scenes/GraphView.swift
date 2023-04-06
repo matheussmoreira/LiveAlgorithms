@@ -32,6 +32,26 @@ struct GraphView: View {
                     }
                 }
                 
+                // Weights
+                ForEach(0..<vm.graph.nodes.count, id: \.self) { i in
+                    let nodeEdges = vm.graph.edges[i]
+                    ForEach(0..<nodeEdges.count, id: \.self) { j in
+                        let edge = nodeEdges[j]
+                        if edge.weight != 0 {
+                            WeightCard(number: edge.weight)
+                                .position(x: edge.weightPosition.x,
+                                           y: edge.weightPosition.y)
+                                .zIndex(2)
+                                .onTapGesture {
+                                    withAnimation {
+                                        vm.setRandomWeightOn(edge)
+                                    }
+                                }
+                        }
+
+                    }
+                }
+                
                 // Nodes
                 ForEach(vm.graph.nodes) { node in
                     NodeView(node: node)
@@ -93,7 +113,7 @@ struct GraphView: View {
                 // MARK: Bottom bar
                 HStack {
                     // Previous step
-                    if !vm.isSelectingAlgorithm {
+                    if !vm.isSelectingAlgorithm || vm.isSettingEdgesWeights {
                         Button(action: {
                             withAnimation {
                                 vm.previousStep()
@@ -110,19 +130,19 @@ struct GraphView: View {
                     if vm.isBuildingGraph {
                         BuildGraphOptionsBar(vm: vm)
                             .padding()
+                    } else if vm.isSettingEdgesWeights {
+                        AlgorithmNameBar(text: vm.selectedAlgorithm?.id ?? "")
+                            .padding()
+                    } else if !vm.isSelectingAlgorithm {
+                        PickAlgorithmOptionsBar(vm: vm)
+                            .padding()
                     } else {
-                        if !vm.isSelectingAlgorithm {
-                            PickAlgorithmOptionsBar(vm: vm)
-                                .padding()
-                        } else {
-                            AlgorithmsList(vm: vm)
-                                .padding()
-                        }
-                        
+                        AlgorithmsList(vm: vm)
+                            .padding()
                     }
                     
                     // Next step
-                    if !vm.isSelectingAlgorithm {
+                    if !vm.isSelectingAlgorithm && !vm.isSettingEdgesWeights {
                         Button(action: {
                             withAnimation {
                                 vm.nextStep()

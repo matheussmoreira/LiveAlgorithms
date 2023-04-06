@@ -30,8 +30,8 @@ enum GraphMakingStep: CaseIterable {
     case nodeSelection
     case edgeSelection
     case initialFinalNodesSelection
-    case askForAlgorithmSelection
-    case algorithmSelection
+    case askingForAlgorithmSelection
+    case algorithmsList
     case edgesWeigthsSelection
     case algorithmSelected
 }

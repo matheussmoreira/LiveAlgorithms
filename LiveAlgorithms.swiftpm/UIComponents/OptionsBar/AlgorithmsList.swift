@@ -28,8 +28,7 @@ struct AlgorithmsList: View {
                 ForEach(list) { alg in
                     Button(action: {
                         withAnimation {
-                            vm.selectedAlgorithm = alg
-                            vm.isSelectingAlgorithm = false
+                            vm.selectAlgorithm(alg)
                         }
                     }) {
                         Text(alg.id)
