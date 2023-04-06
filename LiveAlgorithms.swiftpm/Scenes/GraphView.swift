@@ -41,7 +41,7 @@ struct GraphView: View {
                             WeightCard(number: edge.weight)
                                 .position(x: edge.weightPosition.x,
                                            y: edge.weightPosition.y)
-                                .zIndex(2)
+                                .zIndex(1)
                                 .onTapGesture {
                                     withAnimation {
                                         vm.setRandomWeightOn(edge)

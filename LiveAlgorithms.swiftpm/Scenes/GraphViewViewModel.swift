@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  GraphViewViewModel.swift
 //  
 //
 //  Created by Matheus S. Moreira on 31/03/23.
@@ -11,14 +11,14 @@ class GraphViewViewModel: ObservableObject {
     
     // MARK: - Stored Properties
     
-    // Navigation
+    // General
     private var graphStack: Stack<Graph>
     @Published var graph: Graph
     @Published var step: GraphMakingStep
     
     // Node selection
-    @Published var initialNode: Node?
-    @Published var finalNode: Node?
+    @Published var graphInitialNode: Node?
+    @Published var graphFinalNode: Node?
     @Published var edgeSourceNode: Node?
     @Published var edgeDestNode: Node?
     
@@ -33,6 +33,7 @@ class GraphViewViewModel: ObservableObject {
     
     // MARK: - Computed Properties
     
+    // Navigation buttons
     var previousStepButtonOpacity: Double {
         step != .nodeSelection ? 1 : 0
     }
@@ -41,6 +42,15 @@ class GraphViewViewModel: ObservableObject {
         step == .nodeSelection
     }
     
+    var showPreviousButton: Bool {
+        return !isSelectingAlgorithm || isSettingEdgesWeights
+    }
+    
+    var showNextButton: Bool {
+        return !isSelectingAlgorithm && !isSettingEdgesWeights
+    }
+    
+    // User interaction
     var isBuildingGraph: Bool {
         return step == .nodeSelection
         || step == .edgeSelection
@@ -57,17 +67,9 @@ class GraphViewViewModel: ObservableObject {
         || showNoInitialFinalNodesAlert
     }
     
-    var showPreviousButton: Bool {
-        return !isSelectingAlgorithm || isSettingEdgesWeights 
-    }
-    
-    var showNextButton: Bool {
-        return !isSelectingAlgorithm && !isSettingEdgesWeights
-    }
-    
     // MARK: - Texts
     
-    // Could use a stack
+    // Could use a stack in place of switch
     var topBarText: String {
         switch step {
             case .nodeSelection:
@@ -132,6 +134,8 @@ class GraphViewViewModel: ObservableObject {
 
 extension GraphViewViewModel {
     
+    // MARK: Clear
+    
     func clearButtonTapped() {
         switch step {
             case .nodeSelection:
@@ -145,11 +149,13 @@ extension GraphViewViewModel {
     }
     
     private func clearInitialAndFinalNodes() {
-        initialNode?.place = .normal
-        initialNode = nil
-        finalNode?.place = .normal
-        finalNode = nil
+        graphInitialNode?.place = .normal
+        graphInitialNode = nil
+        graphFinalNode?.place = .normal
+        graphFinalNode = nil
     }
+    
+    // MARK: Random
     
     func randomButtonTapped() {
         switch step {
@@ -162,6 +168,8 @@ extension GraphViewViewModel {
             default: break
         }
     }
+    
+    // MARK: Algorithms setup
     
     func selectAlgorithm(_ alg: Algorithm) {
         selectedAlgorithm = alg
@@ -204,6 +212,8 @@ extension GraphViewViewModel {
         }
     }
     
+    // MARK: Navigation issues
+    
     private func hasLessThanTwoNodes() -> Bool {
         let nodesNumber = graph.unhiddenNodes.count
         if nodesNumber < 2 {
@@ -214,23 +224,25 @@ extension GraphViewViewModel {
     }
     
     private func hasNoInitialFinalNodes() -> Bool {
-        let noNodes = (initialNode == nil || finalNode == nil)
+        let noNodes = (graphInitialNode == nil || graphFinalNode == nil)
         if noNodes { showNoInitialFinalNodesAlert = true }
         return noNodes
     }
     
+    // MARK: Initial and final nodes
+    
     private func handleInitialFinalStatus(for node: Node) {
-        if initialNode == nil {
-            initialNode = node
+        if graphInitialNode == nil {
+            graphInitialNode = node
             node.toggleInitialStatus()
         } else if node.isInitial {
-            initialNode = nil
+            graphInitialNode = nil
             node.toggleInitialStatus()
-        } else if finalNode == nil {
-            finalNode = node
+        } else if graphFinalNode == nil {
+            graphFinalNode = node
             node.toggleFinalStatus()
         } else if node.isFinal {
-            finalNode = nil
+            graphFinalNode = nil
             node.toggleFinalStatus()
         }
     }
@@ -269,20 +281,15 @@ extension GraphViewViewModel {
     
     func setRandomWeightOn(_ edge: Edge) {
         let randomWeight = Int.random(in: 1...99)
-        
         let copy = graph
         copy.setWeightOn(edge: edge, weight: randomWeight)
         graph = copy
     }
     
     private func eraseAllEdgesWeights() {
-        let copy = graph.copy()
-        for nodeEdges in copy.edges {
-            for edge in nodeEdges {
-                edge.weight = 0
-            }
+        for nodeEdges in graph.edges {
+            nodeEdges.forEach {$0.eraseWeight()}
         }
-        graph = copy
     }
     
     // MARK: Tapping on a node
@@ -340,7 +347,7 @@ extension GraphViewViewModel {
         return false
     }
     
-    // MARK: Options bar handling
+    // MARK: Clear and random
     
     private func removeAllEdges() {
         let copy = graph.copy()
@@ -353,6 +360,8 @@ extension GraphViewViewModel {
         copy.edges = copy.getRandomEdges()
         graph = copy
     }
+    
+    // MARK: Navigation issues
     
     private func foundDisconnectedGraph() -> Bool {
         guard let randomNode = graph.unhiddenNodes.randomElement() else {
