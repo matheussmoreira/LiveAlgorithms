@@ -32,6 +32,26 @@ struct GraphView: View {
                     }
                 }
                 
+                // Weights
+                ForEach(0..<vm.graph.nodes.count, id: \.self) { i in
+                    let nodeEdges = vm.graph.edges[i]
+                    ForEach(0..<nodeEdges.count, id: \.self) { j in
+                        let edge = nodeEdges[j]
+                        if edge.weight != 0 {
+                            WeightCard(number: edge.weight)
+                                .position(x: edge.weightPosition.x,
+                                           y: edge.weightPosition.y)
+                                .zIndex(2)
+                                .onTapGesture {
+                                    withAnimation {
+                                        vm.setRandomWeightOn(edge)
+                                    }
+                                }
+                        }
+
+                    }
+                }
+                
                 // Nodes
                 ForEach(vm.graph.nodes) { node in
                     NodeView(node: node)
@@ -46,35 +66,8 @@ struct GraphView: View {
             // MARK: End Graph
             
             // MARK: Alert
-            if vm.showTwoNodesAlert || vm.showDisconnectedGraphAlert {
-                Rectangle()
-                    .fill(Color.blackGray)
-                    .blur(radius: 10)
-                    .overlay {
-                        VStack {
-                            Text(vm.alertText)
-                                .foregroundColor(.white)
-                                .fontWeight(.semibold)
-                                .font(.title3)
-                                .multilineTextAlignment(.center)
-                                .padding()
-                            
-                            Button(action: {
-                                withAnimation { vm.hideAlert() }
-                            }) {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .foregroundColor(.clear)
-                                    .border(Color.white)
-                                    .frame(width: 100, height: 50)
-                                    .overlay {
-                                        Text("Ok")
-                                            .foregroundColor(.white)
-                                            .fontWeight(.semibold)
-                                            .padding()
-                                    }
-                            }
-                        }
-                    }
+            if vm.showAlert {
+                AlertView(vm: vm)
             }
             // MARK: End Alert
             
@@ -93,7 +86,7 @@ struct GraphView: View {
                 // MARK: Bottom bar
                 HStack {
                     // Previous step
-                    if !vm.isSelectingAlgorithm {
+                    if vm.showPreviousButton {
                         Button(action: {
                             withAnimation {
                                 vm.previousStep()
@@ -110,19 +103,19 @@ struct GraphView: View {
                     if vm.isBuildingGraph {
                         BuildGraphOptionsBar(vm: vm)
                             .padding()
+                    } else if vm.isSettingEdgesWeights {
+                        AlgorithmNameBar(text: vm.selectedAlgorithm?.id ?? "")
+                            .padding()
+                    } else if !vm.isSelectingAlgorithm {
+                        PickAlgorithmOptionsBar(vm: vm)
+                            .padding()
                     } else {
-                        if !vm.isSelectingAlgorithm {
-                            PickAlgorithmOptionsBar(vm: vm)
-                                .padding()
-                        } else {
-                            AlgorithmsList(vm: vm)
-                                .padding()
-                        }
-                        
+                        AlgorithmsList(vm: vm)
+                            .padding()
                     }
                     
                     // Next step
-                    if !vm.isSelectingAlgorithm {
+                    if vm.showNextButton {
                         Button(action: {
                             withAnimation {
                                 vm.nextStep()
@@ -132,8 +125,8 @@ struct GraphView: View {
                         }
                     }
                 }
-                .opacity(vm.showTwoNodesAlert
-                         || vm.showDisconnectedGraphAlert ? 0 : 1)
+                .opacity(vm.showAlert ? 0 : 1)
+                
                 // MARK: End bottom bar
 
             } // VStack

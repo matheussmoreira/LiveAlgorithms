@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct WeightCard: View {
-    var number: String
+    var number: Int
     
     var body: some View {
         RoundedRectangle(cornerRadius: 5)
@@ -19,7 +19,7 @@ struct WeightCard: View {
                     .stroke(Color.darkGray, lineWidth: 2)
             }
             .overlay {
-                Text(number)
+                Text(String(number))
                     .fontWeight(.semibold)
                     .font(.title3)
             }

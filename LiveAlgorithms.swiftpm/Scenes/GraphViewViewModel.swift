@@ -11,18 +11,25 @@ class GraphViewViewModel: ObservableObject {
     
     // MARK: - Stored Properties
     
+    // Navigation
     private var graphStack: Stack<Graph>
-    
     @Published var graph: Graph
     @Published var step: GraphMakingStep
-    @Published var selectedAlgorithm: Algorithm?
+    
+    // Node selection
     @Published var initialNode: Node?
     @Published var finalNode: Node?
     @Published var edgeSourceNode: Node?
     @Published var edgeDestNode: Node?
+    
+    // Algorithm selection
+    @Published var selectedAlgorithm: Algorithm?
+    @Published var isSelectingAlgorithm = false
+    
+    // Alerts
     @Published var showTwoNodesAlert = false
     @Published var showDisconnectedGraphAlert = false
-    @Published var isSelectingAlgorithm = false
+    @Published var showNoInitialFinalNodesAlert = false
     
     // MARK: - Computed Properties
     
@@ -40,8 +47,27 @@ class GraphViewViewModel: ObservableObject {
         || step == .initialFinalNodesSelection
     }
     
+    var isSettingEdgesWeights: Bool {
+        return step == .edgesWeigthsSelection
+    }
+    
+    var showAlert: Bool {
+        return showTwoNodesAlert
+        || showDisconnectedGraphAlert
+        || showNoInitialFinalNodesAlert
+    }
+    
+    var showPreviousButton: Bool {
+        return !isSelectingAlgorithm || isSettingEdgesWeights 
+    }
+    
+    var showNextButton: Bool {
+        return !isSelectingAlgorithm && !isSettingEdgesWeights
+    }
+    
     // MARK: - Texts
     
+    // Could use a stack
     var topBarText: String {
         switch step {
             case .nodeSelection:
@@ -54,13 +80,13 @@ class GraphViewViewModel: ObservableObject {
                 """
             case .initialFinalNodesSelection:
                 return "Select the nodes where the algorithms will start and finish"
-            case .askForAlgorithmSelection:
+            case .askingForAlgorithmSelection:
                 if let selectedAlgorithm = selectedAlgorithm {
                     return selectedAlgorithm.rawValue
                 }
                 return "Now, pick an algorithm to see it running live!"
             case .edgesWeigthsSelection:
-                return "Tap on the edges to select a random weight to them"
+                return "Tap on the edges to select a random weight for them"
             case .algorithmSelected:
                 return selectedAlgorithm?.rawValue
                 ?? "Now, pick an algorithm to see it running live!"
@@ -77,6 +103,8 @@ class GraphViewViewModel: ObservableObject {
             The graph is disconnected!\n
             There must not be either a node or a subgraph disconnected from the whole.
             """
+        } else if showNoInitialFinalNodesAlert {
+            return "The graph must have both initial and final nodes set!"
         }
         return ""
     }
@@ -89,62 +117,20 @@ class GraphViewViewModel: ObservableObject {
         step = .nodeSelection
     }
     
+    // MARK: - Methods
+    
     func hideAlert() {
         showTwoNodesAlert = false
         showDisconnectedGraphAlert = false
+        showNoInitialFinalNodesAlert = false
     }
-    
-    // MARK: - Nodes
-    
-    func handleNodeTap(_ node: Node) {
-        switch step {
-            case .nodeSelection:
-                node.toggleHiddenStatus()
-            case .edgeSelection:
-                attemptToConnect(node)
-            case .initialFinalNodesSelection:
-                handleInitialFinalStatus(for: node)
-            default:
-                break
-        }
-    }
-    
-    private func hasLessThanTwoNodes() -> Bool {
-        let nodesNumber = graph.unhiddenNodes.count
-        if nodesNumber < 2 {
-            showTwoNodesAlert = true
-            return true
-        }
-        return false
-    }
-    
-    private func handleInitialFinalStatus(for node: Node) {
-        if initialNode == nil {
-            initialNode = node
-            node.toggleInitialStatus()
-        } else if node.isInitial {
-            initialNode = nil
-            node.toggleInitialStatus()
-        } else if finalNode == nil {
-            finalNode = node
-            node.toggleFinalStatus()
-        } else if node.isFinal {
-            finalNode = nil
-            node.toggleFinalStatus()
-        }
-    }
-    
-    private func randomizeInitialFinalNodesSelection() {
-        guard let randomInitial = graph.unhiddenNodes.randomElement() else { return }
-        let possibleFinalNodes = graph.unhiddenNodes.filter({$0 != randomInitial})
-        guard let randomFinal = possibleFinalNodes.randomElement() else { return }
-        
-        clearInitialAndFinalNodes()
-        handleInitialFinalStatus(for: randomInitial)
-        handleInitialFinalStatus(for: randomFinal)
-    }
-    
-    // MARK: - Options bar
+
+}
+
+
+// MARK: - Options bar
+
+extension GraphViewViewModel {
     
     func clearButtonTapped() {
         switch step {
@@ -177,9 +163,91 @@ class GraphViewViewModel: ObservableObject {
         }
     }
     
+    func selectAlgorithm(_ alg: Algorithm) {
+        selectedAlgorithm = alg
+        isSelectingAlgorithm = false
+        
+        if selectedAlgorithm == .djikstra || selectedAlgorithm == .mst {
+            setRandomWeightsForAllEdges()
+            step = .edgesWeigthsSelection
+        } else {
+            eraseAllEdgesWeights()
+            step = .askingForAlgorithmSelection
+        }
+    }
+    
+    private func setRandomWeightsForAllEdges() {
+        for nodeEdges in graph.edges {
+            for edge in nodeEdges {
+                if edge.weight == 0 {
+                    setRandomWeightOn(edge)
+                }
+            }
+        }
+    }
 }
 
-// MARK: - Edge selection
+// MARK: - Nodes
+
+extension GraphViewViewModel {
+    
+    func handleNodeTap(_ node: Node) {
+        switch step {
+            case .nodeSelection:
+                node.toggleHiddenStatus()
+            case .edgeSelection:
+                attemptToConnect(node)
+            case .initialFinalNodesSelection:
+                handleInitialFinalStatus(for: node)
+            default:
+                break
+        }
+    }
+    
+    private func hasLessThanTwoNodes() -> Bool {
+        let nodesNumber = graph.unhiddenNodes.count
+        if nodesNumber < 2 {
+            showTwoNodesAlert = true
+            return true
+        }
+        return false
+    }
+    
+    private func hasNoInitialFinalNodes() -> Bool {
+        let noNodes = (initialNode == nil || finalNode == nil)
+        if noNodes { showNoInitialFinalNodesAlert = true }
+        return noNodes
+    }
+    
+    private func handleInitialFinalStatus(for node: Node) {
+        if initialNode == nil {
+            initialNode = node
+            node.toggleInitialStatus()
+        } else if node.isInitial {
+            initialNode = nil
+            node.toggleInitialStatus()
+        } else if finalNode == nil {
+            finalNode = node
+            node.toggleFinalStatus()
+        } else if node.isFinal {
+            finalNode = nil
+            node.toggleFinalStatus()
+        }
+    }
+    
+    private func randomizeInitialFinalNodesSelection() {
+        guard let randomInitial = graph.unhiddenNodes.randomElement() else { return }
+        let possibleFinalNodes = graph.unhiddenNodes.filter({$0 != randomInitial})
+        guard let randomFinal = possibleFinalNodes.randomElement() else { return }
+        
+        clearInitialAndFinalNodes()
+        handleInitialFinalStatus(for: randomInitial)
+        handleInitialFinalStatus(for: randomFinal)
+    }
+    
+}
+
+// MARK: - Edges
 
 extension GraphViewViewModel {
     
@@ -194,6 +262,26 @@ extension GraphViewViewModel {
     private func removeEdge(_ edge: Edge) {
         let copy = graph.copy()
         copy.removeEdge(edge)
+        graph = copy
+    }
+    
+    // MARK: Weights
+    
+    func setRandomWeightOn(_ edge: Edge) {
+        let randomWeight = Int.random(in: 1...99)
+        
+        let copy = graph
+        copy.setWeightOn(edge: edge, weight: randomWeight)
+        graph = copy
+    }
+    
+    private func eraseAllEdgesWeights() {
+        let copy = graph.copy()
+        for nodeEdges in copy.edges {
+            for edge in nodeEdges {
+                edge.weight = 0
+            }
+        }
         graph = copy
     }
     
@@ -231,15 +319,6 @@ extension GraphViewViewModel {
         return graph.edgeConnects(edgeSourceNode, to: destNode)
     }
     
-    private func sourceNodeIsEqualTo(_ node: Node) -> Bool {
-        if edgeSourceNode == node {
-            edgeSourceNode?.type = .notVisited
-            edgeSourceNode = nil
-            return true
-        }
-        return false
-    }
-    
     private func connectSourceNodeTo(_ node: Node) {
         // Create edge
         edgeDestNode = node
@@ -250,6 +329,15 @@ extension GraphViewViewModel {
         edgeSourceNode?.type = .notVisited
         edgeSourceNode = nil
         edgeDestNode = nil
+    }
+    
+    private func sourceNodeIsEqualTo(_ node: Node) -> Bool {
+        if edgeSourceNode == node {
+            edgeSourceNode?.type = .notVisited
+            edgeSourceNode = nil
+            return true
+        }
+        return false
     }
     
     // MARK: Options bar handling
@@ -306,11 +394,12 @@ extension GraphViewViewModel {
                 step = .initialFinalNodesSelection
                 
             case .initialFinalNodesSelection:
+                if hasNoInitialFinalNodes() { return }
                 graphStack.push(graph.copy()) // Nodes + edges + initial/final
-                step = .askForAlgorithmSelection
+                step = .askingForAlgorithmSelection
                 
-            case .askForAlgorithmSelection:
-                step = .algorithmSelection
+            case .askingForAlgorithmSelection:
+                step = .algorithmsList
                 
             default:
                 break
@@ -329,11 +418,12 @@ extension GraphViewViewModel {
                 retrievePreviousGraph() // Nodes + edges
                 clearInitialAndFinalNodes()
                 step = .edgeSelection
-            case .askForAlgorithmSelection:
+            case .askingForAlgorithmSelection:
                 retrievePreviousGraph() // Nodes + edges + initial/final
+                eraseAllEdgesWeights()
                 step = .initialFinalNodesSelection
             default:
-                step = .askForAlgorithmSelection
+                step = .askingForAlgorithmSelection
         }
     }
 }

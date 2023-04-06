@@ -162,6 +162,27 @@ extension Graph {
         return false
     }
     
+    // MARK: Weights
+    
+    func setWeightOn(edge: Edge, weight: Int) {
+        let sourceNode = nodes[edge.source.id]
+        let destNode = nodes[edge.dest.id]
+        
+        _ = edges[sourceNode.id].map {
+            if $0 == edge {
+                edge.weight = weight
+                return
+            }
+        }
+        _ = edges[destNode.id].map {
+            if $0 == edge {
+                edge.weight = weight
+                return
+            }
+        }
+
+    }
+    
     // MARK: Remove edges
     
     func removeEdge(_ edge: Edge) {

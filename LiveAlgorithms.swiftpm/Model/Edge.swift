@@ -8,6 +8,8 @@
 import Foundation
 
 class Edge: ObservableObject {
+    // MARK: - Properties
+    
     let source: Node
     let dest: Node
     @Published var sourcePosition: CGPoint
@@ -20,12 +22,28 @@ class Edge: ObservableObject {
         return rev
     }
     
+    var weightPosition: CGPoint {
+        let sourceX = sourcePosition.x
+        let destX = destPosition.x
+        let x = (destX + sourceX)/2
+        
+        let sourceY = sourcePosition.y
+        let destY = destPosition.y
+        let y = (destY + sourceY)/2
+        
+        return CGPoint(x: x, y: y)
+    }
+    
+    // MARK: - Init
+    
     init(from source: Node, to dest: Node) {
         self.source = source
         self.dest = dest
         self.sourcePosition = source.position
         self.destPosition = dest.position
     }
+    
+    // MARK: - Methods
     
     func setWeight(to newWeight: Int) {
         weight = newWeight
@@ -35,6 +53,8 @@ class Edge: ObservableObject {
         print("Edge: \(source.id)-\(dest.id) (\(weight)")
     }
 }
+
+// MARK: - Protocols
 
 extension Edge: Equatable, Comparable {
     static func == (lhs: Edge, rhs: Edge) -> Bool {

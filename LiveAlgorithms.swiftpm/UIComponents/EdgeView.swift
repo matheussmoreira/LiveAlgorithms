@@ -17,6 +17,5 @@ struct EdgeView: View {
         }
         .strokedPath(StrokeStyle(lineWidth: 3))
         .foregroundColor(.white)
-        .opacity(0.5)
     }
 }
