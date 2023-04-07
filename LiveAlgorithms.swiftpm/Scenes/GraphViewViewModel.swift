@@ -469,6 +469,7 @@ extension GraphViewViewModel {
                 
             case .askingForAlgorithmSelection:
                 retrievePreviousGraph() // Nodes + edges + initial/final
+                selectedAlgorithm = nil
                 clearInitialAndFinalNodes()
                 eraseAllEdgesWeights()
                 step = .edgeSelection

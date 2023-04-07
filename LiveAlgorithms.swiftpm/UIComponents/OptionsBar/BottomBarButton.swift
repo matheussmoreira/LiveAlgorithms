@@ -10,16 +10,17 @@ import SwiftUI
 struct BottomBarButton: View {
     var image: Image
     var text: String
+    var disabled: Bool = false
     var action: () -> Void
     
     var body: some View {
         Button(action: self.action ) {
             HStack {
                 image
-                    .foregroundColor(.white)
+                    .foregroundColor(disabled ? .gray : .white)
                     .font(.title2)
                 Text(text)
-                    .foregroundColor(.white)
+                    .foregroundColor(disabled ? .gray : .white)
                     .font(.title2)
                     .fontWeight(.semibold)
             }
