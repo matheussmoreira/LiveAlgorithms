@@ -49,6 +49,10 @@ class Edge: ObservableObject {
         weight = newWeight
     }
     
+    func eraseWeight() {
+        weight = 0
+    }
+    
     func description() {
         print("Edge: \(source.id)-\(dest.id) (\(weight)")
     }

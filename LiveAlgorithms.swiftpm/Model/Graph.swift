@@ -8,6 +8,7 @@
 import Foundation
 
 class Graph: ObservableObject, Copying {
+    
     // MARK: - Type Properties
     
     static let maxNodesQuant = UIHelper.nodesPositions.count
@@ -102,28 +103,28 @@ extension Graph {
     }
     
     func getRandomEdges() -> [[Edge]] {
-        var randomEdges = generateRandomSpanningTree()
-        
+        let randomEdges = generateRandomTree()
+        /*
         let nodes = unhiddenNodes
-        
+
         for sourceNode in nodes {
             let destNodes = unhiddenNodes.filter {$0 != sourceNode}
             var destNodesQuant = 1 // Int.random(in: 0...destNodes.count)
-            
+
             while (destNodesQuant > 0) {
                 guard let destNode = destNodes.randomElement() else { break }
                 if edgeConnects(sourceNode, to: destNode, on: randomEdges) { continue }
-                
+
                 let edge = Edge(from: sourceNode, to: destNode)
                 addEdge(edge, on: &randomEdges)
                 destNodesQuant -= 1
             }
         }
-        
+        */
         return randomEdges
     }
     
-    private func generateRandomSpanningTree() -> [[Edge]] {
+    private func generateRandomTree() -> [[Edge]] {
         var edgesMatrix = Self.createEmptyEdgesMatrix(quantity: nodes.count)
         var nodes = unhiddenNodes
         

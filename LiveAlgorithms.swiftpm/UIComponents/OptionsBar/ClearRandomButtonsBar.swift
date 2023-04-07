@@ -1,5 +1,5 @@
 //
-//  BuildGraphOptionsBar.swift
+//  ClearRandomButtonsBar.swift
 //  
 //
 //  Created by Matheus S. Moreira on 31/03/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BuildGraphOptionsBar: View {
+struct ClearRandomButtonsBar: View {
     @ObservedObject var vm: GraphViewViewModel
     
     private let w = UIHelper.screenWidth * 415/744
@@ -21,12 +21,12 @@ struct BuildGraphOptionsBar: View {
             
             HStack {
                 Spacer()
-                OptionsButton(image: .clear, text: "Clear") {
+                BottomBarButton(image: .clear, text: "Clear") {
                     withAnimation { vm.clearButtonTapped() }
                 }.padding(.trailing)
                 Spacer()
                 
-                OptionsButton(image: .random, text: "Random") {
+                BottomBarButton(image: .random, text: "Random") {
                     withAnimation { vm.randomButtonTapped() }
                 }.padding(.leading)
                 Spacer()

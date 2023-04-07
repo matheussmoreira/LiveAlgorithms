@@ -1,5 +1,5 @@
 //
-//  PickAlgorithmOptionsBar.swift
+//  SelectAlgorithmAndRunBar.swift
 //  
 //
 //  Created by Matheus S. Moreira on 05/04/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PickAlgorithmOptionsBar: View {
+struct SelectAlgorithmAndRunBar: View {
     @ObservedObject var vm: GraphViewViewModel
     
     private let w = UIHelper.screenWidth * 415/744
@@ -21,15 +21,18 @@ struct PickAlgorithmOptionsBar: View {
             
             HStack {
                 Spacer()
-                OptionsButton(image: .turnUp, text: "Select algorithm") {
+                BottomBarButton(image: .turnUp, text: "Select algorithm") {
                     withAnimation {
-                        vm.isSelectingAlgorithm = true
+                        vm.showAlgorithmsList()
                     }
                 }.padding(.trailing)
                 Spacer()
                 
-                OptionsButton(image: .run, text: "Run") {
-                    withAnimation { }
+                #warning("Desabilitar visualmente se não tiver algoritmo escolhido ainda")
+                BottomBarButton(image: .run, text: "Run") {
+                    withAnimation {
+                        vm.runButtonTapped()
+                    }
                 }.padding(.leading)
                 Spacer()
             }
