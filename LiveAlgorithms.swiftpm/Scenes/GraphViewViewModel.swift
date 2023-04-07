@@ -231,8 +231,7 @@ extension GraphViewViewModel {
             case .edgeSelection:
                 attemptToConnect(node)
             case .onlyInitialNodeSelection:
-                #warning("handleInitialStatus(for: node)")
-                break
+                handleInitialStatus(for: node)
             case .initialFinalNodesSelection:
                 handleInitialFinalStatus(for: node)
             default:
@@ -278,6 +277,20 @@ extension GraphViewViewModel {
         } else if node.isFinal {
             graphFinalNode = nil
             node.toggleFinalStatus()
+        }
+    }
+    
+    private func handleInitialStatus(for node: Node) {
+        if graphInitialNode == nil {
+            graphInitialNode = node
+            node.toggleInitialStatus()
+        } else if node.isInitial {
+            graphInitialNode = nil
+            node.toggleInitialStatus()
+        } else {
+            graphInitialNode?.toggleInitialStatus()
+            graphInitialNode = node
+            node.toggleInitialStatus()
         }
     }
     
