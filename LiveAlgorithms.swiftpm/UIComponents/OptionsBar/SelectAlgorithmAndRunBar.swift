@@ -23,13 +23,16 @@ struct SelectAlgorithmAndRunBar: View {
                 Spacer()
                 BottomBarButton(image: .turnUp, text: "Select algorithm") {
                     withAnimation {
-                        vm.isShowingAlgorithmsList = true
+                        vm.showAlgorithmsList()
                     }
                 }.padding(.trailing)
                 Spacer()
                 
+                #warning("Desabilitar visualmente se não tiver algoritmo escolhido ainda")
                 BottomBarButton(image: .run, text: "Run") {
-                    withAnimation { }
+                    withAnimation {
+                        vm.runButtonTapped()
+                    }
                 }.padding(.leading)
                 Spacer()
             }

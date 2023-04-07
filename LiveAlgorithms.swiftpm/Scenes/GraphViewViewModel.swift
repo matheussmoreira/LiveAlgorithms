@@ -424,7 +424,7 @@ extension GraphViewViewModel {
         }
     }
 
-    func nextStep() {
+    func nextButtonTapped() {
         switch step {
             case .nodeSelection:
                 if hasLessThanTwoNodes() { return }
@@ -447,7 +447,7 @@ extension GraphViewViewModel {
         }
     }
     
-    func previousStep() {
+    func previousButtonTapped() {
         switch step {
             case .edgeSelection:
                 retrievePreviousGraph() // Nodes only
@@ -471,6 +471,22 @@ extension GraphViewViewModel {
                 step = .askingForAlgorithmSelection // DFS, BFS
                 
             default: break
+        }
+    }
+    
+    func showAlgorithmsList() {
+        isShowingAlgorithmsList = true
+    }
+    
+    func runButtonTapped() {
+        switch selectedAlgorithm {
+        case .djikstra:
+            if hasNoInitialNode() { break }
+                
+        case .bfs, .dfs:
+            if hasNoInitialFinalNodes() { break }
+                
+        default: break
         }
     }
 }

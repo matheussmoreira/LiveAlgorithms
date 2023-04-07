@@ -92,7 +92,7 @@ struct GraphView: View {
                     // Previous step
                     if vm.showPreviousButton {
                         Button(action: {
-                            withAnimation { vm.previousStep() }
+                            withAnimation { vm.previousButtonTapped() }
                         }) {
                             Arrow(next: false)
                         }
@@ -117,7 +117,7 @@ struct GraphView: View {
                     // Next step
                     if vm.showNextButton {
                         Button(action: {
-                            withAnimation { vm.nextStep() }
+                            withAnimation { vm.nextButtonTapped() }
                         }) {
                             Arrow(next: true)
                         }
