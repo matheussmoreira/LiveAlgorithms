@@ -1,5 +1,5 @@
 //
-//  OptionsButton.swift
+//  BottomBarButton.swift
 //  
 //
 //  Created by Matheus S. Moreira on 05/04/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct OptionsButton: View {
+struct BottomBarButton: View {
     var image: Image
     var text: String
     var action: () -> Void

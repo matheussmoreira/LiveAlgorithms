@@ -29,9 +29,10 @@ enum EdgeError: Error {
 enum GraphMakingStep: CaseIterable {
     case nodeSelection
     case edgeSelection
-    case initialFinalNodesSelection
     case askingForAlgorithmSelection
     case algorithmsList
+    case initialFinalNodesSelection
+    case onlyInitialNodeSelection
     case edgesWeigthsSelection
     case algorithmSelected
 }

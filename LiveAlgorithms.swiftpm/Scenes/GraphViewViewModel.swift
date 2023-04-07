@@ -24,37 +24,51 @@ class GraphViewViewModel: ObservableObject {
     
     // Algorithm selection
     @Published var selectedAlgorithm: Algorithm?
-    @Published var isSelectingAlgorithm = false
+    @Published var isShowingAlgorithmsList = false
     
     // Alerts
     @Published var showTwoNodesAlert = false
     @Published var showDisconnectedGraphAlert = false
     @Published var showNoInitialFinalNodesAlert = false
+    @Published var showNoInitialNodeAlert = false
     
     // MARK: - Computed Properties
     
     // Navigation buttons
-    var previousStepButtonOpacity: Double {
-        step != .nodeSelection ? 1 : 0
+    var nextButtonOpacity: Double {
+        switch step {
+        case .nodeSelection, .edgeSelection:
+            return 1
+        case .edgesWeigthsSelection, .onlyInitialNodeSelection:
+            return selectedAlgorithm == .djikstra ? 1 : 0
+        default:
+            return 0
+        }
     }
     
-    var previousStepButtonIsDisabled: Bool {
-        step == .nodeSelection
+    var previousButtonOpacity: Double {
+        switch step {
+            case .nodeSelection, .algorithmsList:
+            return 0
+        default:
+            return 1
+        }
     }
     
     var showPreviousButton: Bool {
-        return !isSelectingAlgorithm || isSettingEdgesWeights
+        return !isShowingAlgorithmsList
     }
-    
+
     var showNextButton: Bool {
-        return !isSelectingAlgorithm && !isSettingEdgesWeights
+        return !isShowingAlgorithmsList
     }
     
     // User interaction
-    var isBuildingGraph: Bool {
+    var isEditingNodesAndEdges: Bool {
         return step == .nodeSelection
         || step == .edgeSelection
         || step == .initialFinalNodesSelection
+        || step == .onlyInitialNodeSelection
     }
     
     var isSettingEdgesWeights: Bool {
@@ -65,6 +79,7 @@ class GraphViewViewModel: ObservableObject {
         return showTwoNodesAlert
         || showDisconnectedGraphAlert
         || showNoInitialFinalNodesAlert
+        || showNoInitialNodeAlert
     }
     
     // MARK: - Texts
@@ -74,24 +89,27 @@ class GraphViewViewModel: ObservableObject {
         switch step {
             case .nodeSelection:
                 return "Select the nodes you want to remove from the graph"
+                
             case .edgeSelection:
                 return
                   """
                 Connect the nodes by tapping two of them in sequence
                 Tap on an edge to remove it
                 """
-            case .initialFinalNodesSelection:
-                return "Select the nodes where the algorithms will start and finish"
+                
             case .askingForAlgorithmSelection:
-                if let selectedAlgorithm = selectedAlgorithm {
-                    return selectedAlgorithm.rawValue
-                }
-                return "Now, pick an algorithm to see it running live!"
-            case .edgesWeigthsSelection:
-                return "Tap on the edges to select a random weight for them"
-            case .algorithmSelected:
                 return selectedAlgorithm?.rawValue
                 ?? "Now, pick an algorithm to see it running live!"
+                
+            case .initialFinalNodesSelection:
+                return "Select the nodes where the algorithms will start and finish"
+                
+            case .edgesWeigthsSelection:
+                return "Tap on the edges to select a random weight for them"
+                
+            case .onlyInitialNodeSelection:
+                return "Select the node where the algorithm will start from"
+                
             default:
                 return "Placeholder"
         }
@@ -107,6 +125,8 @@ class GraphViewViewModel: ObservableObject {
             """
         } else if showNoInitialFinalNodesAlert {
             return "The graph must have both initial and final nodes set!"
+        } else if showNoInitialNodeAlert {
+            return "The graph must have an initial node set!"
         }
         return ""
     }
@@ -125,6 +145,7 @@ class GraphViewViewModel: ObservableObject {
         showTwoNodesAlert = false
         showDisconnectedGraphAlert = false
         showNoInitialFinalNodesAlert = false
+        showNoInitialNodeAlert = false
     }
 
 }
@@ -142,7 +163,7 @@ extension GraphViewViewModel {
                 graph.retrieveAllNodes()
             case .edgeSelection:
                 removeAllEdges()
-            case .initialFinalNodesSelection:
+            case .initialFinalNodesSelection, .onlyInitialNodeSelection:
                 clearInitialAndFinalNodes()
             default: break
         }
@@ -163,6 +184,9 @@ extension GraphViewViewModel {
                 graph.randomizeNodeSelection()
             case .edgeSelection:
                 randomizeEdgeSelection()
+            case .onlyInitialNodeSelection:
+                #warning("randomizeInitialNodeSelection()")
+                break
             case .initialFinalNodesSelection:
                 randomizeInitialFinalNodesSelection()
             default: break
@@ -173,14 +197,15 @@ extension GraphViewViewModel {
     
     func selectAlgorithm(_ alg: Algorithm) {
         selectedAlgorithm = alg
-        isSelectingAlgorithm = false
+        isShowingAlgorithmsList = false
         
         if selectedAlgorithm == .djikstra || selectedAlgorithm == .mst {
+            clearInitialAndFinalNodes()
             setRandomWeightsForAllEdges()
             step = .edgesWeigthsSelection
         } else {
             eraseAllEdgesWeights()
-            step = .askingForAlgorithmSelection
+            step = .initialFinalNodesSelection
         }
     }
     
@@ -205,6 +230,9 @@ extension GraphViewViewModel {
                 node.toggleHiddenStatus()
             case .edgeSelection:
                 attemptToConnect(node)
+            case .onlyInitialNodeSelection:
+                #warning("handleInitialStatus(for: node)")
+                break
             case .initialFinalNodesSelection:
                 handleInitialFinalStatus(for: node)
             default:
@@ -227,6 +255,12 @@ extension GraphViewViewModel {
         let noNodes = (graphInitialNode == nil || graphFinalNode == nil)
         if noNodes { showNoInitialFinalNodesAlert = true }
         return noNodes
+    }
+    
+    private func hasNoInitialNode() -> Bool {
+        let noInitialNode = (graphInitialNode == nil)
+        if noInitialNode { showNoInitialNodeAlert = true }
+        return noInitialNode
     }
     
     // MARK: Initial and final nodes
@@ -400,39 +434,43 @@ extension GraphViewViewModel {
             case .edgeSelection:
                 if foundDisconnectedGraph() { return }
                 graphStack.push(graph.copy()) // Nodes + edges
-                step = .initialFinalNodesSelection
-                
-            case .initialFinalNodesSelection:
-                if hasNoInitialFinalNodes() { return }
-                graphStack.push(graph.copy()) // Nodes + edges + initial/final
                 step = .askingForAlgorithmSelection
+
+            case .edgesWeigthsSelection:
+                step = .onlyInitialNodeSelection // Djikstra
+            
+            case .onlyInitialNodeSelection:
+                if hasNoInitialNode() { return }
+                step = .askingForAlgorithmSelection // Djikstra
                 
-            case .askingForAlgorithmSelection:
-                step = .algorithmsList
-                
-            default:
-                break
+            default: break
         }
     }
     
     func previousStep() {
         switch step {
-            case .nodeSelection:
-                break
             case .edgeSelection:
                 retrievePreviousGraph() // Nodes only
                 graph.unvisitAllNodes()
                 step = .nodeSelection
-            case .initialFinalNodesSelection:
-                retrievePreviousGraph() // Nodes + edges
-                clearInitialAndFinalNodes()
-                step = .edgeSelection
+                
             case .askingForAlgorithmSelection:
                 retrievePreviousGraph() // Nodes + edges + initial/final
+                clearInitialAndFinalNodes()
                 eraseAllEdgesWeights()
-                step = .initialFinalNodesSelection
-            default:
-                step = .askingForAlgorithmSelection
+                step = .edgeSelection
+                
+            case .edgesWeigthsSelection:
+                step = .askingForAlgorithmSelection // Djikstra, Prim
+                
+            case .onlyInitialNodeSelection:
+                clearInitialAndFinalNodes()
+                step = .edgesWeigthsSelection // Djikstra
+                
+            case .initialFinalNodesSelection:
+                step = .askingForAlgorithmSelection // DFS, BFS
+                
+            default: break
         }
     }
 }

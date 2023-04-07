@@ -72,13 +72,17 @@ struct GraphView: View {
             // MARK: End Alert
             
             VStack {
-                AppTitleInline()
-                    .padding(.top, 32)
+                if !vm.showAlert {
+                    AppTitleInline()
+                        .padding(.top, 32)
+                }
                 
-                TopBar(text: vm.topBarText)
-                    .frame(height: UIHelper.screenHeight * 64/1133)
-                    .padding(.top, 32)
-                    .opacity(vm.showTwoNodesAlert ? 0 : 1)
+                if !vm.showAlert {
+                    TopBar(text: vm.topBarText)
+                        .frame(height: UIHelper.screenHeight * 64/1133)
+                        .padding(.top, 32)
+                        .opacity(vm.showTwoNodesAlert ? 0 : 1)
+                }
                 
                 // MARK: Graph space
                 Spacer()
@@ -88,26 +92,22 @@ struct GraphView: View {
                     // Previous step
                     if vm.showPreviousButton {
                         Button(action: {
-                            withAnimation {
-                                vm.previousStep()
-                            }
+                            withAnimation { vm.previousStep() }
                         }) {
                             Arrow(next: false)
                         }
-                        .opacity(vm.previousStepButtonOpacity)
-                        .disabled(vm.previousStepButtonIsDisabled)
+                        .opacity(vm.previousButtonOpacity)
                     }
                     
-                    
                     // Options bar
-                    if vm.isBuildingGraph {
-                        BuildGraphOptionsBar(vm: vm)
+                    if vm.isEditingNodesAndEdges {
+                        ClearRandomButtonsBar(vm: vm)
                             .padding()
                     } else if vm.isSettingEdgesWeights {
-                        AlgorithmNameBar(text: vm.selectedAlgorithm?.id ?? "")
-                            .padding()
-                    } else if !vm.isSelectingAlgorithm {
-                        PickAlgorithmOptionsBar(vm: vm)
+                       AlgorithmNameBar(text: vm.selectedAlgorithm?.id ?? "")
+                           .padding()
+                    } else if !vm.isShowingAlgorithmsList {
+                        SelectAlgorithmAndRunBar(vm: vm)
                             .padding()
                     } else {
                         AlgorithmsList(vm: vm)
@@ -117,12 +117,11 @@ struct GraphView: View {
                     // Next step
                     if vm.showNextButton {
                         Button(action: {
-                            withAnimation {
-                                vm.nextStep()
-                            }
+                            withAnimation { vm.nextStep() }
                         }) {
                             Arrow(next: true)
                         }
+                        .opacity(vm.nextButtonOpacity)
                     }
                 }
                 .opacity(vm.showAlert ? 0 : 1)
