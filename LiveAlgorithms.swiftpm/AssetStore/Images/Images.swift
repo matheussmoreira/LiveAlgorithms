@@ -8,5 +8,6 @@
 import SwiftUI
 
 extension Image {
-    static let appTitle = Image("LiveAlgorithms")
+    static let appTitleInline = Image("LiveAlgorithmsInline")
+    static let appTitleRect = Image("TitleRect")
 }

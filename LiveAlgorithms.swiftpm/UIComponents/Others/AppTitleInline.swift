@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AppTitleInline: View {
     var body: some View {
-        Image.appTitle
+        Image.appTitleInline
             .resizable()
             .aspectRatio(contentMode: .fit)
     }
