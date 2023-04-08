@@ -64,5 +64,33 @@ struct UIHelper {
             CGPoint(x: screenWidth * 255/744, y: screenHeight * 691/1133),
         ]
     }
+    
+    static func getTopBarText(for step: GraphMakingStep, algorithm: Algorithm?) -> String {
+        switch step {
+            case .nodeSelection:
+                return .selectTheNodes
+                
+            case .edgeSelection:
+                return .connectTheNodes
+                
+            case .askingForAlgorithmSelection:
+                return algorithm?.rawValue ?? .pickAnAlgorithm
+                
+            case .initialFinalNodesSelection:
+                return .selectInitialFinalNodes
+                
+            case .edgesWeigthsSelection:
+                return .selectEdgesWeights
+                
+            case .onlyInitialNodeSelection:
+                return .selectInitialNode
+                
+            case .liveAlgorithm:
+                return algorithm?.rawValue ?? "Placeholder"
+                
+            default:
+                return "Placeholder"
+        }
 
+    }
 }

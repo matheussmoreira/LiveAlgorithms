@@ -28,10 +28,9 @@ struct SelectAlgorithmAndRunBar: View {
                 }.padding(.trailing)
                 Spacer()
                 
-                #warning("Desabilitar visualmente se não tiver algoritmo escolhido ainda")
                 BottomBarButton(image: .run, text: "Run", disabled: vm.selectedAlgorithm == nil) {
                     withAnimation {
-                        vm.runButtonTapped()
+                        vm.runAlgorithm()
                     }
                 }.padding(.leading)
                 Spacer()

@@ -34,7 +34,7 @@ enum GraphMakingStep: CaseIterable {
     case initialFinalNodesSelection
     case onlyInitialNodeSelection
     case edgesWeigthsSelection
-    case algorithmSelected
+    case liveAlgorithm
 }
 
 enum Algorithm: String, CaseIterable, Identifiable {

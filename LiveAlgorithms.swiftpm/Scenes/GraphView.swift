@@ -101,17 +101,19 @@ struct GraphView: View {
                     
                     // Options bar
                     if vm.isEditingNodesAndEdges {
-                        ClearRandomButtonsBar(vm: vm)
-                            .padding()
+                        ClearRandomBar(vm: vm).padding()
+                        
                     } else if vm.isSettingEdgesWeights {
-                       AlgorithmNameBar(text: vm.selectedAlgorithm?.id ?? "")
-                           .padding()
-                    } else if !vm.isShowingAlgorithmsList {
-                        SelectAlgorithmAndRunBar(vm: vm)
-                            .padding()
+                       AlgorithmNameBar(text: vm.selectedAlgorithm?.id ?? "").padding()
+                        
+                    } else if vm.isAboutToPickOrRunAlgorithm {
+                        SelectAlgorithmAndRunBar(vm: vm).padding()
+                        
+                    } else if vm.algorithmIsLive {
+                        StopPauseResumeBar(vm: vm).padding()
+                        
                     } else {
-                        AlgorithmsList(vm: vm)
-                            .padding()
+                        AlgorithmsList(vm: vm) .padding()
                     }
                     
                     // Next step

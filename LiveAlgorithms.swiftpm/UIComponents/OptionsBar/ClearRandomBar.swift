@@ -1,5 +1,5 @@
 //
-//  ClearRandomButtonsBar.swift
+//  ClearRandomBar.swift
 //  
 //
 //  Created by Matheus S. Moreira on 31/03/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ClearRandomButtonsBar: View {
+struct ClearRandomBar: View {
     @ObservedObject var vm: GraphViewViewModel
     
     private let w = UIHelper.screenWidth * 415/744
