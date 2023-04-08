@@ -8,7 +8,5 @@
 import SwiftUI
 
 extension Image {
-    static let appTitle1 = Image("LiveAlgorithms1")
-    static let appTitle2 = Image("LiveAlgorithms2")
-    static let appTitle3 = Image("LiveAlgorithms3")
+    static let appTitle = Image("LiveAlgorithms")
 }
