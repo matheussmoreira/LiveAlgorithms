@@ -12,21 +12,33 @@ import Foundation
 extension Graph {
     
     private func animateAlgorithm() {
-        let _ = Timer.scheduledTimer(withTimeInterval: 0.75, repeats: true, block: { timer in
+        algorithmIsRunning = true
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 0.75, repeats: true, block: { algTimer in
+            if !self.algorithmIsRunning { return }
+            
             if self.visitedNodesIds.isEmpty {
-                timer.invalidate()
-                self.foundFinalNode = false
+                algTimer.invalidate()
+                self.timer?.invalidate()
+                self.algorithmIsRunning = false
                 return
             }
             
             let id = self.visitedNodesIds.removeFirst()
             self.nodes[id].setAsVisited()
+            
+            if id == self.finalNodeId {
+                self.visitedFinalNodeId = self.finalNodeId
+            }
         })
     }
     
     // MARK: DFS
     
     func animateDFS(startingFrom node: Node) {
+        finalNodeId = nil
+        visitedFinalNodeId = nil
+        
         dfs(startingFrom: node)
         animateAlgorithm()
     }
@@ -35,12 +47,12 @@ extension Graph {
         visitedNodesIds.append(node.id)
         
         if node.isFinal {
-            foundFinalNode = true
+            finalNodeId = node.id
             return
         }
         
         for edge in edges[node.id] {
-            if foundFinalNode { break }
+            if finalNodeId != nil { return }
             if !visitedNodesIds.contains(edge.dest.id) {
                 dfs(startingFrom: edge.dest)
             }
@@ -50,6 +62,9 @@ extension Graph {
     // MARK: BFS
     
     func animateBFS(startingFrom node: Node) {
+        finalNodeId = nil
+        visitedFinalNodeId = nil
+        
         bfs(startingFrom: node)
         animateAlgorithm()
     }
@@ -61,11 +76,15 @@ extension Graph {
         
         while(!queue.isEmpty) {
             guard let dequeuedNode = queue.dequeue() else { break }
+            
             for edge in edges[dequeuedNode.id] {
-                if !visitedNodesIds.contains(edge.dest.id) {
-                    queue.enqueue(edge.dest)
-                    visitedNodesIds.append(edge.dest.id)
-                    if edge.dest.isFinal { return }
+                if visitedNodesIds.contains(edge.dest.id) { continue }
+                queue.enqueue(edge.dest)
+                visitedNodesIds.append(edge.dest.id)
+                
+                if edge.dest.isFinal {
+                    finalNodeId = edge.dest.id
+                    return
                 }
             }
         }

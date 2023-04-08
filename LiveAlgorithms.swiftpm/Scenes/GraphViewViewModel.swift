@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 class GraphViewViewModel: ObservableObject {
     
@@ -26,7 +27,11 @@ class GraphViewViewModel: ObservableObject {
     @Published var selectedAlgorithm: Algorithm?
     
     // Running algorithms
-    @Published var isRunningAlgorithm = false
+//    @Published var algorithmIsRunning = false
+//    @Published var algRunning: Bool {
+//        graph.$algorithmIsRunning
+//    }
+    private var cancellables = Set<AnyCancellable>()
     
     // Alerts
     @Published var showTwoNodesAlert = false
@@ -154,12 +159,12 @@ extension GraphViewViewModel {
             case .edgeSelection:
                 removeAllEdges()
             case .initialFinalNodesSelection, .onlyInitialNodeSelection:
-                clearInitialAndFinalNodes()
+                clearInitialFinalNodes()
             default: break
         }
     }
     
-    private func clearInitialAndFinalNodes() {
+    private func clearInitialFinalNodes() {
         graphInitialNode?.place = .normal
         graphInitialNode = nil
         graphFinalNode?.place = .normal
@@ -186,7 +191,7 @@ extension GraphViewViewModel {
     
     func selectAlgorithm(_ alg: Algorithm) {
         selectedAlgorithm = alg
-        clearInitialAndFinalNodes()
+        clearInitialFinalNodes()
         eraseAllEdgesWeights()
         
         if selectedAlgorithm == .djikstra || selectedAlgorithm == .mst {
@@ -287,14 +292,14 @@ extension GraphViewViewModel {
         let possibleFinalNodes = graph.unhiddenNodes.filter({$0 != randomInitial})
         guard let randomFinal = possibleFinalNodes.randomElement() else { return }
         
-        clearInitialAndFinalNodes()
+        clearInitialFinalNodes()
         handleInitialFinalStatus(for: randomInitial)
         handleInitialFinalStatus(for: randomFinal)
     }
     
     private func randomizeInitialNodeSelection() {
         guard let randomInitial = graph.unhiddenNodes.randomElement() else { return }
-        clearInitialAndFinalNodes()
+        clearInitialFinalNodes()
         handleInitialStatus(for: randomInitial)
     }
     
@@ -413,10 +418,10 @@ extension GraphViewViewModel {
         
         if !graph.visitedAllNodes {
             showDisconnectedGraphAlert = true
-            graph.resetNodesVisitation()
+            graph.eraseVisitedNodesIdsArray()
             return true
         }
-        graph.resetNodesVisitation()
+        graph.eraseVisitedNodesIdsArray()
         return false
     }
 }
@@ -464,7 +469,7 @@ extension GraphViewViewModel {
             case .askingForAlgorithmSelection:
                 retrievePreviousGraph() // Nodes + edges + initial/final
                 selectedAlgorithm = nil
-                clearInitialAndFinalNodes()
+                clearInitialFinalNodes()
                 eraseAllEdgesWeights()
                 graph.unvisitAllNodes()
                 step = .edgeSelection
@@ -473,7 +478,7 @@ extension GraphViewViewModel {
                 step = .askingForAlgorithmSelection // Djikstra, Prim
                 
             case .onlyInitialNodeSelection:
-                clearInitialAndFinalNodes()
+                clearInitialFinalNodes()
                 step = .edgesWeigthsSelection // Djikstra
                 
             case .initialFinalNodesSelection:
@@ -484,6 +489,7 @@ extension GraphViewViewModel {
     }
     
     func showAlgorithmsList() {
+        eraseGraph()
         step = .algorithmsList
     }
     
@@ -493,33 +499,49 @@ extension GraphViewViewModel {
         switch selectedAlgorithm {
         case .dfs:
             if hasNoInitialFinalNodes() { break }
-            isRunningAlgorithm = true
+            graph.unvisitAllNodes()
             step = .liveAlgorithm
             graph.animateDFS(startingFrom: graphInitialNode!)
+            observeAlgorithmFinishedStatus()
                 
         case .bfs:
             if hasNoInitialFinalNodes() { break }
-            isRunningAlgorithm = true
+            graph.unvisitAllNodes()
             step = .liveAlgorithm
             graph.animateBFS(startingFrom: graphInitialNode!)
+            observeAlgorithmFinishedStatus()
             
         case .djikstra:
             if hasNoInitialNode() { break }
-            isRunningAlgorithm = true
-            step = .liveAlgorithm
+//            graph.unvisitAllNodes()
+//            step = .liveAlgorithm
+//            graph.animateDjiskstra(startingFrom: graphInitialNode)
+//            observeAlgorithmFinishedStatus()
                 
         default: break
         }
     }
     
+    func eraseGraph() {
+        graph.unvisitAllNodes()
+        clearInitialFinalNodes()
+    }
+    
+    private func observeAlgorithmFinishedStatus() {
+        graph.$visitedFinalNodeId.sink { id in
+            if id != nil {
+                self.step = .askingForAlgorithmSelection
+            }
+        }.store(in: &cancellables)
+    }
+    
     func pauseResumeAlgorithm() {
-        #warning("Pause/resume timer")
-        isRunningAlgorithm.toggle()
+        graph.algorithmIsRunning.toggle()
     }
     
     func stopAlgorithm() {
-        #warning("Stop timer")
-        isRunningAlgorithm = false
+        graph.stopTimer()
+        graph.unvisitAllNodes()
         step = .askingForAlgorithmSelection
     }
 }

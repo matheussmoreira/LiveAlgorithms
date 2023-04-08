@@ -19,8 +19,14 @@ class Graph: ObservableObject, Copying {
     
     @Published var nodes: [Node]
     @Published var edges: [[Edge]]
+    @Published var visitedFinalNodeId: Int?
+    @Published var algorithmIsRunning = false
+    
+    var finalNodeId: Int?
     var visitedNodesIds = [Int]()
-    var foundFinalNode = false
+    var timer: Timer?
+    
+    // MARK: - Computed Properties
     
     var visitedAllNodes: Bool {
         return visitedNodesIds.count == unhiddenNodes.count
@@ -50,6 +56,13 @@ class Graph: ObservableObject, Copying {
         self.init(nodes: prototype.nodes, edges: prototype.edges)
     }
     
+    // MARK: - Timer
+    
+    func stopTimer() {
+        timer?.invalidate()
+        algorithmIsRunning = false
+    }
+    
     // MARK: - Nodes
     
     func addNode(_ node: Node) {
@@ -67,15 +80,14 @@ class Graph: ObservableObject, Copying {
     
     // MARK: Visitation
     
-    func resetNodesVisitation() {
+    func eraseVisitedNodesIdsArray() {
         visitedNodesIds = []
     }
     
     func unvisitAllNodes() {
-        for node in unhiddenNodes {
-            if node.isVisited {
-                node.setAsNotVisited()
-            }
+        eraseVisitedNodesIdsArray()
+        for node in unhiddenNodes where node.isVisited {
+            node.setAsNotVisited()
         }
     }
     

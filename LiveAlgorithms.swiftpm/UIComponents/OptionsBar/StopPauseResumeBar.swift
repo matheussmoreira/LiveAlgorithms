@@ -6,20 +6,16 @@
 //
 
 import SwiftUI
+import Combine
 
 struct StopPauseResumeBar: View {
     @ObservedObject var vm: GraphViewViewModel
+    @State private var secButtonImage: Image = .pause
+    @State private var secButtonText: String = "Pause"
+    @State private var cancellables = Set<AnyCancellable>()
     
     private let w = UIHelper.screenWidth * 415/744
     private let h = UIHelper.screenWidth * 70/1133
-    
-    private var secondButtonImage: Image {
-        vm.isRunningAlgorithm ? .pause: .run
-    }
-    
-    private var secondButtonText: String {
-        vm.isRunningAlgorithm ? "Pause" : "Resume"
-    }
     
     var body: some View {
         ZStack {
@@ -34,7 +30,7 @@ struct StopPauseResumeBar: View {
                 }.padding(.trailing)
                 Spacer()
                 
-                BottomBarButton(image: secondButtonImage, text: secondButtonText) {
+                BottomBarButton(image: secButtonImage, text: secButtonText) {
                     withAnimation { vm.pauseResumeAlgorithm() }
                 }.padding(.leading)
                 Spacer()
@@ -42,5 +38,20 @@ struct StopPauseResumeBar: View {
         }
         .frame(height: h)
         .frame(maxWidth: w)
+        .onAppear {
+            observeAlgorithmRunningStatus()
+        }
+    }
+    
+    func observeAlgorithmRunningStatus() {
+        vm.graph.$algorithmIsRunning.sink { running in
+            if running {
+                secButtonImage = .pause
+                secButtonText = "Pause"
+            } else {
+                secButtonImage = .run
+                secButtonText = "Resume"
+            }
+        }.store(in: &cancellables)
     }
 }
