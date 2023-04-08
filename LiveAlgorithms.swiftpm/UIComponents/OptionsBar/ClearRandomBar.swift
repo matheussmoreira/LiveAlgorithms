@@ -1,13 +1,13 @@
 //
-//  SelectAlgorithmAndRunBar.swift
+//  ClearRandomBar.swift
 //  
 //
-//  Created by Matheus S. Moreira on 05/04/23.
+//  Created by Matheus S. Moreira on 31/03/23.
 //
 
 import SwiftUI
 
-struct SelectAlgorithmAndRunBar: View {
+struct ClearRandomBar: View {
     @ObservedObject var vm: GraphViewViewModel
     
     private let w = UIHelper.screenWidth * 415/744
@@ -21,23 +21,18 @@ struct SelectAlgorithmAndRunBar: View {
             
             HStack {
                 Spacer()
-                BottomBarButton(image: .turnUp, text: "Select algorithm") {
-                    withAnimation {
-                        vm.showAlgorithmsList()
-                    }
+                BottomBarButton(image: .clear, text: "Clear") {
+                    withAnimation { vm.clearButtonTapped() }
                 }.padding(.trailing)
                 Spacer()
                 
-                BottomBarButton(image: .run, text: "Run", disabled: vm.selectedAlgorithm == nil) {
-                    withAnimation {
-                        vm.runAlgorithm()
-                    }
+                BottomBarButton(image: .random, text: "Random") {
+                    withAnimation { vm.randomButtonTapped() }
                 }.padding(.leading)
                 Spacer()
             }
         }
         .frame(height: h)
         .frame(maxWidth: w)
-
     }
 }

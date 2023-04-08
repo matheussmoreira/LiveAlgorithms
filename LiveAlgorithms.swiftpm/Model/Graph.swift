@@ -50,12 +50,6 @@ class Graph: ObservableObject, Copying {
         self.init(nodes: prototype.nodes, edges: prototype.edges)
     }
     
-//    static func delay(secs: Double, action: @escaping () -> Void) {
-//        DispatchQueue.main.asyncAfter(deadline: .now() + secs, execute: {
-//            action()
-//        })
-//    }
-    
     // MARK: - Nodes
     
     func addNode(_ node: Node) {
