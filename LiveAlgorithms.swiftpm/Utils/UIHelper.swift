@@ -11,6 +11,16 @@ struct UIHelper {
     static let screenWidth = UIScreen.main.bounds.width
     static let screenHeight = UIScreen.main.bounds.height
     
+    static let blackBoxHeight = screenHeight * 260/1133
+    
+//    static let appTitleTwoLinesSize = CGSize(width: screenWidth * 671/744, height: screenHeight * 231/1133)
+//    static let appTitleTwoLinesPosition = CGPoint(x: screenWidth * 37/744,
+//                                                  y: screenHeight * 890/1133)
+    
+    static let greenCircleSize = CGSize(width: screenWidth * 50/744, height: screenHeight * 50/1133)
+    static let greenCirclePosition = CGPoint(x: screenWidth * 260/744,
+                                                y: screenHeight * 1022/1133)
+    
     static var nodesPositions: [CGPoint] {
         return [
             CGPoint(x: screenWidth * 624/744, y: screenHeight * 407/1133),
