@@ -20,6 +20,7 @@ class Graph: ObservableObject, Copying {
     @Published var nodes: [Node]
     @Published var edges: [[Edge]]
     var visitedNodesIds = [Int]()
+    var foundFinalNode = false
     
     var visitedAllNodes: Bool {
         return visitedNodesIds.count == unhiddenNodes.count

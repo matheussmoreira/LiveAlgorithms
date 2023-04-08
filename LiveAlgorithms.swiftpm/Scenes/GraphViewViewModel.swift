@@ -26,6 +26,9 @@ class GraphViewViewModel: ObservableObject {
     @Published var selectedAlgorithm: Algorithm?
     @Published var isShowingAlgorithmsList = false
     
+    // Running algorithms
+    @Published var isRunningAlgorithm = false
+    
     // Alerts
     @Published var showTwoNodesAlert = false
     @Published var showDisconnectedGraphAlert = false
@@ -185,8 +188,7 @@ extension GraphViewViewModel {
             case .edgeSelection:
                 randomizeEdgeSelection()
             case .onlyInitialNodeSelection:
-                #warning("randomizeInitialNodeSelection()")
-                break
+                randomizeInitialNodeSelection()
             case .initialFinalNodesSelection:
                 randomizeInitialFinalNodesSelection()
             default: break
@@ -198,13 +200,13 @@ extension GraphViewViewModel {
     func selectAlgorithm(_ alg: Algorithm) {
         selectedAlgorithm = alg
         isShowingAlgorithmsList = false
+        clearInitialAndFinalNodes()
+        eraseAllEdgesWeights()
         
         if selectedAlgorithm == .djikstra || selectedAlgorithm == .mst {
-            clearInitialAndFinalNodes()
             setRandomWeightsForAllEdges()
             step = .edgesWeigthsSelection
         } else {
-            eraseAllEdgesWeights()
             step = .initialFinalNodesSelection
         }
     }
@@ -302,6 +304,12 @@ extension GraphViewViewModel {
         clearInitialAndFinalNodes()
         handleInitialFinalStatus(for: randomInitial)
         handleInitialFinalStatus(for: randomFinal)
+    }
+    
+    private func randomizeInitialNodeSelection() {
+        guard let randomInitial = graph.unhiddenNodes.randomElement() else { return }
+        clearInitialAndFinalNodes()
+        handleInitialStatus(for: randomInitial)
     }
     
 }
@@ -472,6 +480,7 @@ extension GraphViewViewModel {
                 selectedAlgorithm = nil
                 clearInitialAndFinalNodes()
                 eraseAllEdgesWeights()
+                graph.unvisitAllNodes()
                 step = .edgeSelection
                 
             case .edgesWeigthsSelection:
@@ -493,12 +502,19 @@ extension GraphViewViewModel {
     }
     
     func runButtonTapped() {
+        if isRunningAlgorithm { return }
+        
         switch selectedAlgorithm {
+        case .dfs:
+            if hasNoInitialFinalNodes() { break }
+            graph.animateDFS(startingFrom: graphInitialNode!)
+                
+        case .bfs:
+            if hasNoInitialFinalNodes() { break }
+            graph.animateBFS(startingFrom: graphInitialNode!)
+            
         case .djikstra:
             if hasNoInitialNode() { break }
-                
-        case .bfs, .dfs:
-            if hasNoInitialFinalNodes() { break }
                 
         default: break
         }
