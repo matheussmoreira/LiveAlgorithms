@@ -12,7 +12,7 @@ class Graph: ObservableObject, Copying {
     // MARK: - Type Properties
     
     static let maxNodesQuant = UIHelper.nodesPositions.count
-//    static let maxNodesQuantFirstScreen = 80
+    static let maxHiddenNodesQuantCover = UIHelper.coverHiddenNodesPositions.count
     static let nodeSize: CGFloat = 30
     
     // MARK: - Properties
@@ -217,6 +217,17 @@ extension Graph {
         for i in 0..<maxNodesQuant {
             let point = UIHelper.nodesPositions[i]
             let node = Node(id: i, position: point)
+            nodes.append(node)
+        }
+        return Graph(nodes: nodes)
+    }
+    
+    static func generateHiddenForCover() -> Graph {
+        var nodes = [Node]()
+        for i in 0..<maxHiddenNodesQuantCover {
+            let point = UIHelper.coverHiddenNodesPositions[i]
+            let node = Node(id: i, position: point)
+            node.type = .hidden
             nodes.append(node)
         }
         return Graph(nodes: nodes)
