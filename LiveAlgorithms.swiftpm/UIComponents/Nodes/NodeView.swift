@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NodeView: View {
     @ObservedObject var node: Node
+    var decreasedZIndex: Bool = true
     
     private var nodeIsVisited: Bool {
         node.type == .visited
@@ -26,7 +27,8 @@ struct NodeView: View {
             if nodeIsUnhidden {
                 NormalNode(isVisited: nodeIsVisited)
             } else {
-                HiddenNode().zIndex(-2)
+                HiddenNode()
+                    .zIndex(decreasedZIndex ? -2 : 0)
             }
         }
     }

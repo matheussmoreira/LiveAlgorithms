@@ -12,7 +12,7 @@ class Graph: ObservableObject, Copying {
     // MARK: - Type Properties
     
     static let maxNodesQuant = UIHelper.nodesPositions.count
-//    static let maxNodesQuantFirstScreen = 80
+    static let maxHiddenNodesQuantCover = UIHelper.coverHiddenNodesPositions.count
     static let nodeSize: CGFloat = 30
     
     // MARK: - Properties
@@ -220,6 +220,95 @@ extension Graph {
             nodes.append(node)
         }
         return Graph(nodes: nodes)
+    }
+    
+    static func generateHiddenForCover() -> Graph {
+        var nodes = [Node]()
+        for i in 0..<maxHiddenNodesQuantCover {
+            let point = UIHelper.coverHiddenNodesPositions[i]
+            let node = Node(id: i, position: point)
+            node.type = .hidden
+            nodes.append(node)
+        }
+        return Graph(nodes: nodes)
+    }
+    
+    static func generateUnhiddenForCover() -> Graph {
+        let positions = UIHelper.coverUnhiddenNodesPositions
+        var edges = [[Edge]]()
+        
+        for _ in 0...25 {edges.append([Edge]())}
+        
+        let graph = Graph(nodes: [Node](), edges: edges)
+        
+        let node0 = Node(id: 0, position: positions[0])
+        graph.addNode(node0)
+        
+        for i in 1...9 {
+            let node = Node(id: i, position: positions[i])
+            graph.addNode(node)
+            let edge = Edge(from: graph.nodes[i], to: graph.nodes[i-1])
+            graph.addEdge(edge)
+        }
+        
+        let node10 = Node(id: 10, position: positions[10])
+        graph.addNode(node10)
+        let edge10 = Edge(from: graph.nodes[10], to: graph.nodes[3])
+        graph.addEdge(edge10)
+        
+        for i in 11...13 {
+            let node = Node(id: i, position: positions[i])
+            graph.addNode(node)
+            let edge = Edge(from: graph.nodes[i], to: graph.nodes[i-1])
+            graph.addEdge(edge)
+        }
+        
+        let node14 = Node(id: 14, position: positions[14])
+        graph.addNode(node14)
+        let edge14 = Edge(from: graph.nodes[14], to: graph.nodes[10])
+        graph.addEdge(edge14)
+        
+        let node15 = Node(id: 15, position: positions[15])
+        graph.addNode(node15)
+        let edge15 = Edge(from: graph.nodes[15], to: graph.nodes[14])
+        graph.addEdge(edge15)
+        
+        let node16 = Node(id: 16, position: positions[16])
+        graph.addNode(node16)
+        let edge16 = Edge(from: graph.nodes[16], to: graph.nodes[3])
+        graph.addEdge(edge16)
+        
+        for i in 17...19 {
+            let node = Node(id: i, position: positions[i])
+            graph.addNode(node)
+            let edge = Edge(from: graph.nodes[i], to: graph.nodes[i-1])
+            graph.addEdge(edge)
+        }
+        
+        let node20 = Node(id: 20, position: positions[20])
+        graph.addNode(node20)
+        let edge20 = Edge(from: graph.nodes[20], to: graph.nodes[18])
+        graph.addEdge(edge20)
+        
+        for i in 21...23 {
+            let node = Node(id: i, position: positions[i])
+            graph.addNode(node)
+            let edge = Edge(from: graph.nodes[i], to: graph.nodes[i-1])
+            graph.addEdge(edge)
+        }
+        
+        let node24 = Node(id: 24, position: positions[24])
+        graph.addNode(node24)
+        let edge24 = Edge(from: graph.nodes[24], to: graph.nodes[22])
+        graph.addEdge(edge24)
+        
+        let node25 = Node(id: 25, position: positions[25])
+        node25.toggleFinalStatus()
+        graph.addNode(node25)
+        let edge25 = Edge(from: graph.nodes[25], to: graph.nodes[24])
+        graph.addEdge(edge25)
+        
+        return graph
     }
     
     static func randomPlacedNodes() -> Graph {

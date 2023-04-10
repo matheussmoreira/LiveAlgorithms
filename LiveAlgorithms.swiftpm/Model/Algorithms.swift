@@ -14,7 +14,7 @@ extension Graph {
     private func animateAlgorithm() {
         algorithmIsRunning = true
         
-        timer = Timer.scheduledTimer(withTimeInterval: 0.75, repeats: true, block: { algTimer in
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { algTimer in
             if !self.algorithmIsRunning { return }
             
             if self.visitedNodesIds.isEmpty {
