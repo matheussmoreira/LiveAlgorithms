@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct UIHelper {
+    
     // MARK: - Sizes
     
     static let screenWidth = UIScreen.main.bounds.width
@@ -81,6 +82,24 @@ struct UIHelper {
             Self.pointOnScreen(x: 30,  y: 24),  Self.pointOnScreen(x: 248, y: 24),
             Self.pointOnScreen(x: 414, y: 24),  Self.pointOnScreen(x: 525, y: 52),
             Self.pointOnScreen(x: 632, y: 24),  Self.pointOnScreen(x: 685, y: 80)
+        ]
+    }
+    
+    static var coverUnhiddenNodesPositions: [CGPoint] {
+        return [greenCirclePosition,
+                Self.pointOnScreen(x: 332, y: 926), Self.pointOnScreen(x: 303, y: 694),
+                Self.pointOnScreen(x: 351, y: 627), Self.pointOnScreen(x: 405, y: 666),
+                Self.pointOnScreen(x: 424, y: 605), Self.pointOnScreen(x: 476, y: 703),
+                Self.pointOnScreen(x: 490, y: 641), Self.pointOnScreen(x: 559, y: 612),
+                Self.pointOnScreen(x: 476, y: 563), Self.pointOnScreen(x: 289, y: 605),
+                Self.pointOnScreen(x: 212, y: 535), Self.pointOnScreen(x: 148, y: 608),
+                Self.pointOnScreen(x: 134, y: 508), Self.pointOnScreen(x: 275, y: 535),
+                Self.pointOnScreen(x: 184, y: 436), Self.pointOnScreen(x: 364, y: 542),
+                Self.pointOnScreen(x: 323, y: 478), Self.pointOnScreen(x: 419, y: 392),
+                Self.pointOnScreen(x: 536, y: 464), Self.pointOnScreen(x: 485, y: 343),
+                Self.pointOnScreen(x: 344, y: 320), Self.pointOnScreen(x: 409, y: 177),
+                Self.pointOnScreen(x: 382, y: 117), Self.pointOnScreen(x: 539, y: 150),
+                Self.pointOnScreen(x: 588, y: 64)
         ]
     }
 }
