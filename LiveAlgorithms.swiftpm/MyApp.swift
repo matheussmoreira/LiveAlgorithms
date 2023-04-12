@@ -9,7 +9,7 @@ struct MyApp: App {
             if isShowingCover {
                 CoverView()
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 7, execute: {
                             isShowingCover.toggle()
                         })
                     }

@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct CoverView: View {
+    @StateObject private var graphUnhiddenNodes = Graph.generateUnhiddenForCover()
     private let graphHiddenNodes = Graph.generateHiddenForCover()
-    private let graphUnhiddenNodes = Graph.generateUnhiddenForCover()
     
     var body: some View {
         ZStack {
@@ -23,11 +23,13 @@ struct CoverView: View {
                     .aspectRatio(contentMode: .fit)
             }.ignoresSafeArea()
             
+            // Hidden nodes
             ForEach(graphHiddenNodes.nodes) { node in
                 NodeView(node: node, decreasedZIndex: false)
                     .position(node.position)
             }
             
+            // Edges
             ForEach(0..<graphUnhiddenNodes.edges.count, id: \.self) { i in
                 let nodeEdges = graphUnhiddenNodes.edges[i]
                 ForEach(0..<nodeEdges.count, id: \.self) { j in
@@ -36,16 +38,27 @@ struct CoverView: View {
                 }
             }
             
+            // Unhidden nodes
             ForEach(graphUnhiddenNodes.nodes) { node in
                 NodeView(node: node, decreasedZIndex: false)
                     .position(node.position)
             }
-            
-            Image("GreenCircle")
-                .frame(width: UIHelper.greenCircleSize.width,
-                       height: UIHelper.greenCircleSize.width)
-                .position(x: UIHelper.greenCirclePosition.x,
-                          y: UIHelper.greenCirclePosition.y)
+        }
+        .onAppear {
+            withAnimation {
+                buildGraph()
+            }
+        }
+    }
+}
+
+extension CoverView {
+    func buildGraph() {
+        var id = 0
+        let _ = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { timer in
+            id += 1
+            graphUnhiddenNodes.build(withNewNodeOfId: id)
+            if id == 25 { timer.invalidate() }
         }
     }
 }
