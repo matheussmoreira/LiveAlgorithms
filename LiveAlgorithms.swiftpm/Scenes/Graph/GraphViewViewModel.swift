@@ -26,11 +26,6 @@ class GraphViewViewModel: ObservableObject {
     // Algorithm selection
     @Published var selectedAlgorithm: Algorithm?
     
-    // Running algorithms
-//    @Published var algorithmIsRunning = false
-//    @Published var algRunning: Bool {
-//        graph.$algorithmIsRunning
-//    }
     private var cancellables = Set<AnyCancellable>()
     
     // Alerts
@@ -193,6 +188,7 @@ extension GraphViewViewModel {
         selectedAlgorithm = alg
         clearInitialFinalNodes()
         eraseAllEdgesWeights()
+        graph.resetSPT()
         
         if selectedAlgorithm == .djikstra || selectedAlgorithm == .mst {
             setRandomWeightsForAllEdges()
@@ -327,9 +323,7 @@ extension GraphViewViewModel {
     
     func setRandomWeightOn(_ edge: Edge) {
         let randomWeight = Int.random(in: 1...99)
-        let copy = graph
-        copy.setWeightOn(edge: edge, weight: randomWeight)
-        graph = copy
+        graph.setWeightOn(edge: edge, weight: randomWeight)
     }
     
     private func eraseAllEdgesWeights() {
@@ -472,6 +466,7 @@ extension GraphViewViewModel {
                 clearInitialFinalNodes()
                 eraseAllEdgesWeights()
                 graph.unvisitAllNodes()
+                graph.resetSPT()
                 step = .edgeSelection
                 
             case .edgesWeigthsSelection:
@@ -500,6 +495,7 @@ extension GraphViewViewModel {
         case .dfs:
             if hasNoInitialFinalNodes() { break }
             graph.unvisitAllNodes()
+            graph.resetSPT()
             step = .liveAlgorithm
             graph.animateDFS(startingFrom: graphInitialNode!)
             observeAlgorithmFinishedStatus()
@@ -507,16 +503,18 @@ extension GraphViewViewModel {
         case .bfs:
             if hasNoInitialFinalNodes() { break }
             graph.unvisitAllNodes()
+            graph.resetSPT()
             step = .liveAlgorithm
             graph.animateBFS(startingFrom: graphInitialNode!)
             observeAlgorithmFinishedStatus()
             
         case .djikstra:
             if hasNoInitialNode() { break }
-//            graph.unvisitAllNodes()
-//            step = .liveAlgorithm
-//            graph.animateDjiskstra(startingFrom: graphInitialNode)
-//            observeAlgorithmFinishedStatus()
+            graph.unvisitAllNodes()
+            graph.resetSPT()
+            step = .liveAlgorithm
+            graph.animateDjikstra(startingFrom: graphInitialNode!)
+            observeAlgorithmFinishedStatus()
                 
         default: break
         }
@@ -528,8 +526,8 @@ extension GraphViewViewModel {
     }
     
     private func observeAlgorithmFinishedStatus() {
-        graph.$visitedFinalNodeId.sink { id in
-            if id != nil {
+        graph.$visitedNodesIds.sink { nodes in
+            if nodes.isEmpty {
                 self.step = .askingForAlgorithmSelection
             }
         }.store(in: &cancellables)

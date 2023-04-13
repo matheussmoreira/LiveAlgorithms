@@ -2,7 +2,8 @@ import SwiftUI
 
 @main
 struct MyApp: App {
-    @State private var isShowingCover = true
+    #warning("Commit as true")
+    @State private var isShowingCover = false
     
     var body: some Scene {
         WindowGroup {

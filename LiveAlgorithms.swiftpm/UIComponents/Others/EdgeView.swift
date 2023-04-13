@@ -9,13 +9,17 @@ import SwiftUI
 
 struct EdgeView: View {
     @ObservedObject var edge: Edge
+
+    var color: Color {
+        edge.isInSPT ? .white : .yellow
+    }
     
     var body: some View {
         Path { path in
             path.move(to: edge.sourcePosition)
             path.addLine(to: edge.destPosition)
         }
-        .strokedPath(StrokeStyle(lineWidth: 3))
-        .foregroundColor(.white)
+        .stroke(lineWidth: 3)
+        .foregroundColor(color)
     }
 }
