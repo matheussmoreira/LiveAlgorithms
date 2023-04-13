@@ -103,17 +103,17 @@ extension Graph {
         var distances = [Int:Int]()
         
         unhiddenNodes.forEach { node in
-            distances[node.id] = Int.max
+            distances[node.id] = .max
+            edgesInSPT[node.id] = nil
         }
         
         distances[node.id] = 0
-        visitedNodesIds = []
         
         while visitedNodesIds.count < unhiddenNodes.count {
-            let currentNodeId = minDistance(distances: distances, visitedNodes: visitedNodesIds)
+            let currentNodeId = minDistance(distances: distances)
             visitedNodesIds.append(currentNodeId)
             
-            for edge in edges[currentNodeId] {
+            for edge in edges[currentNodeId] where !visitedNodesIds.contains(edge.dest.id) {
                 guard let currentDistance = distances[currentNodeId] else { continue }
                 guard let destDistance = distances[edge.dest.id] else { continue }
                 
@@ -121,21 +121,18 @@ extension Graph {
                 
                 if distanceToNeighbor < destDistance {
                     distances[edge.dest.id] = distanceToNeighbor
-                    edgesInSPT.append(edge)
+                    edgesInSPT[edge.dest.id] = edge
                 }
-//                else {
-//                    edgesOutOfSPT.append(edge)
-//                }
             }
         }
     }
     
-    func minDistance(distances: [Int:Int], visitedNodes: [Int]) -> Int {
+    func minDistance(distances: [Int:Int]) -> Int {
         var closestNodeId = -1
         var shortestDistance = Int.max
         
-        for (nodeId,dist) in distances {
-            if !visitedNodes.contains(nodeId) && dist < shortestDistance {
+        for (nodeId,dist) in distances where !visitedNodesIds.contains(nodeId) {
+            if dist < shortestDistance {
                 closestNodeId = nodeId
                 shortestDistance = dist
             }

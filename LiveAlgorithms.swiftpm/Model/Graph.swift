@@ -25,8 +25,8 @@ class Graph: ObservableObject, Copying {
     
     var timer: Timer?
     var finalNodeId: Int?
-    var edgesInSPT = [Edge]()
-    var edgesOutOfSPT = [Edge]()
+    var edgesInSPT = [Int:Edge?]()
+//    var edgesOutOfSPT = [Edge]()
     
     // MARK: - Computed Properties
     
@@ -96,14 +96,12 @@ class Graph: ObservableObject, Copying {
     func removeEdgesFromSPT() {
         for nodeEdges in edges {
             for edge in nodeEdges {
-                if !edgesInSPT.contains(where: {$0 == edge}) {
+                if !edgesInSPT.contains(where: {$0.value == edge}) {
                     edge.setAsOutOfSPT()
                 }
             }
         }
-//        for edge in edgesOutOfSPT {
-//            edge.setAsOutOfSPT()
-//        }
+        unvisitAllNodes()
     }
     
     func resetSPT() {
@@ -112,7 +110,7 @@ class Graph: ObservableObject, Copying {
                 edge.setAsInSPT()
             }
         }
-        edgesOutOfSPT = []
+        edgesInSPT = [:]
     }
     
 }

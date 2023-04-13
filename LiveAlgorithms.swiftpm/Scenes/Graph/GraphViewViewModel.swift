@@ -434,20 +434,20 @@ extension GraphViewViewModel {
         switch step {
             case .nodeSelection:
                 if hasLessThanTwoNodes() { return }
-                graphStack.push(graph.copy()) // Nodes only
+                graphStack.push(graph.copy())
                 step = .edgeSelection
                 
             case .edgeSelection:
                 if foundDisconnectedGraph() { return }
-                graphStack.push(graph.copy()) // Nodes + edges
+                graphStack.push(graph.copy())
                 step = .askingForAlgorithmSelection
 
             case .edgesWeigthsSelection:
-                step = .onlyInitialNodeSelection // Djikstra
+                step = .onlyInitialNodeSelection
             
             case .onlyInitialNodeSelection:
                 if hasNoInitialNode() { return }
-                step = .askingForAlgorithmSelection // Djikstra
+                step = .askingForAlgorithmSelection
                 
             default: break
         }
@@ -456,12 +456,12 @@ extension GraphViewViewModel {
     func previousButtonTapped() {
         switch step {
             case .edgeSelection:
-                retrievePreviousGraph() // Nodes only
+                retrievePreviousGraph()
                 graph.unvisitAllNodes()
                 step = .nodeSelection
                 
             case .askingForAlgorithmSelection:
-                retrievePreviousGraph() // Nodes + edges + initial/final
+                retrievePreviousGraph()
                 selectedAlgorithm = nil
                 clearInitialFinalNodes()
                 eraseAllEdgesWeights()
@@ -470,14 +470,14 @@ extension GraphViewViewModel {
                 step = .edgeSelection
                 
             case .edgesWeigthsSelection:
-                step = .askingForAlgorithmSelection // Djikstra, Prim
+                step = .askingForAlgorithmSelection
                 
             case .onlyInitialNodeSelection:
                 clearInitialFinalNodes()
-                step = .edgesWeigthsSelection // Djikstra
+                step = .edgesWeigthsSelection
                 
             case .initialFinalNodesSelection:
-                step = .askingForAlgorithmSelection // DFS, BFS
+                step = .askingForAlgorithmSelection
                 
             default: break
         }
