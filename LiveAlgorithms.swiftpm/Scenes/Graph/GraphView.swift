@@ -23,7 +23,7 @@ struct GraphView: View {
                     ForEach(0..<nodeEdges.count, id: \.self) { j in
                         let edge = nodeEdges[j]
                         EdgeView(edge: edge)
-                            .zIndex(-1)
+                            .zIndex(edge.isInSPT ? -1 : -2)
                             .onTapGesture {
                                 withAnimation {
                                     vm.handleEdgeTap(edge)
@@ -37,12 +37,15 @@ struct GraphView: View {
                     let nodeEdges = vm.graph.edges[i]
                     ForEach(0..<nodeEdges.count, id: \.self) { j in
                         let edge = nodeEdges[j]
+                        let x = edge.weightPosition.x
+                        let y = edge.weightPosition.y
+                        
                         if edge.weight != 0 {
-                            WeightCard(number: edge.weight)
-                                .position(x: edge.weightPosition.x,
-                                           y: edge.weightPosition.y)
+                            WeightCard(edge: edge)
+                                .position(x: x, y: y)
                                 .zIndex(1)
                                 .onTapGesture {
+                                    if !vm.isSettingEdgesWeights { return }
                                     withAnimation {
                                         vm.setRandomWeightOn(edge)
                                     }

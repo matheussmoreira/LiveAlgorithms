@@ -20,11 +20,13 @@ class Graph: ObservableObject, Copying {
     @Published var nodes: [Node]
     @Published var edges: [[Edge]]
     @Published var visitedFinalNodeId: Int?
+    @Published var visitedNodesIds = [Int]()
     @Published var algorithmIsRunning = false
     
-    var finalNodeId: Int?
-    var visitedNodesIds = [Int]()
     var timer: Timer?
+    var finalNodeId: Int?
+    var edgesInSPT = [Int:Edge?]()
+//    var edgesOutOfSPT = [Edge]()
     
     // MARK: - Computed Properties
     
@@ -89,6 +91,26 @@ class Graph: ObservableObject, Copying {
         for node in unhiddenNodes where node.isVisited {
             node.setAsNotVisited()
         }
+    }
+    
+    func removeEdgesFromSPT() {
+        for nodeEdges in edges {
+            for edge in nodeEdges {
+                if !edgesInSPT.contains(where: {$0.value == edge}) {
+                    edge.setAsOutOfSPT()
+                }
+            }
+        }
+        unvisitAllNodes()
+    }
+    
+    func resetSPT() {
+        for nodeEdges in edges {
+            for edge in nodeEdges {
+                edge.setAsInSPT()
+            }
+        }
+        edgesInSPT = [:]
     }
     
 }

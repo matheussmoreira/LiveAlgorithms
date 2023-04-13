@@ -11,7 +11,7 @@ import Foundation
 
 extension Graph {
     
-    private func animateAlgorithm() {
+    private func animateNodesVisitation() {
         algorithmIsRunning = true
         
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { algTimer in
@@ -21,12 +21,14 @@ extension Graph {
                 algTimer.invalidate()
                 self.timer?.invalidate()
                 self.algorithmIsRunning = false
+                self.removeEdgesFromSPT()
                 return
             }
             
             let id = self.visitedNodesIds.removeFirst()
             self.nodes[id].setAsVisited()
             
+            // DFS and BFS
             if id == self.finalNodeId {
                 self.visitedFinalNodeId = self.finalNodeId
             }
@@ -40,7 +42,7 @@ extension Graph {
         visitedFinalNodeId = nil
         
         dfs(startingFrom: node)
-        animateAlgorithm()
+        animateNodesVisitation()
     }
     
     func dfs(startingFrom node: Node) {
@@ -66,7 +68,7 @@ extension Graph {
         visitedFinalNodeId = nil
         
         bfs(startingFrom: node)
-        animateAlgorithm()
+        animateNodesVisitation()
     }
     
     private func bfs(startingFrom node: Node) {
@@ -88,6 +90,55 @@ extension Graph {
                 }
             }
         }
+    }
+    
+    // MARK: - Djikstra
+    
+    func animateDjikstra(startingFrom node: Node) {
+        djikstra(startingFrom: node)
+        animateNodesVisitation()
+    }
+    
+    private func djikstra(startingFrom node: Node) {
+        var distances = [Int:Int]()
+        
+        unhiddenNodes.forEach { node in
+            distances[node.id] = .max
+            edgesInSPT[node.id] = nil
+        }
+        
+        distances[node.id] = 0
+        
+        while visitedNodesIds.count < unhiddenNodes.count {
+            let currentNodeId = minDistance(distances: distances)
+            visitedNodesIds.append(currentNodeId)
+            
+            for edge in edges[currentNodeId] where !visitedNodesIds.contains(edge.dest.id) {
+                guard let currentDistance = distances[currentNodeId] else { continue }
+                guard let destDistance = distances[edge.dest.id] else { continue }
+                
+                let distanceToNeighbor = currentDistance + edge.weight
+                
+                if distanceToNeighbor < destDistance {
+                    distances[edge.dest.id] = distanceToNeighbor
+                    edgesInSPT[edge.dest.id] = edge
+                }
+            }
+        }
+    }
+    
+    func minDistance(distances: [Int:Int]) -> Int {
+        var closestNodeId = -1
+        var shortestDistance = Int.max
+        
+        for (nodeId,dist) in distances where !visitedNodesIds.contains(nodeId) {
+            if dist < shortestDistance {
+                closestNodeId = nodeId
+                shortestDistance = dist
+            }
+        }
+        
+        return closestNodeId
     }
     
 }

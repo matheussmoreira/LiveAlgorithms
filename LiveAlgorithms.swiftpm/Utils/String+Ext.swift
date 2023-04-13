@@ -18,7 +18,7 @@ extension String {
              """
     static let pickAnAlgorithm = "Now, pick an algorithm to see it running live!"
     static let selectInitialFinalNodes = "Select the nodes where the algorithms will start and finish"
-    static let selectEdgesWeights = "Tap on the edges to select a random weight for them"
+    static let selectEdgesWeights = "Tap on the numbers to select a random weight for the edges"
     static let selectInitialNode = "Select the node where the algorithm will start from"
 
     // MARK: Alerts

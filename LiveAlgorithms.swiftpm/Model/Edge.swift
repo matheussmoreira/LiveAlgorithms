@@ -8,13 +8,16 @@
 import Foundation
 
 class Edge: ObservableObject {
+    
     // MARK: - Properties
     
     let source: Node
     let dest: Node
+
     @Published var sourcePosition: CGPoint
     @Published var destPosition: CGPoint
     @Published var weight: Int = 0
+    @Published var isInSPT = true
     
     var reversed: Edge {
         let rev = Edge(from: dest, to: source)
@@ -53,8 +56,12 @@ class Edge: ObservableObject {
         weight = 0
     }
     
-    func description() {
-        print("Edge: \(source.id)-\(dest.id) (\(weight)")
+    func setAsOutOfSPT() {
+        isInSPT = false
+    }
+    
+    func setAsInSPT() {
+        isInSPT = true
     }
 }
 
