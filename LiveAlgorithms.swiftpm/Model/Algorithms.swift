@@ -14,6 +14,7 @@ extension Graph {
     // MARK: DFS
     
     func runDFS(startingFrom node: Node) {
+        selectedAlgorithm = .dfs
         finalNodeId = nil
         visitedFinalNodeId = nil
         
@@ -40,6 +41,7 @@ extension Graph {
     // MARK: BFS
     
     func runBFS(startingFrom node: Node) {
+        selectedAlgorithm = .bfs
         finalNodeId = nil
         visitedFinalNodeId = nil
         
@@ -71,6 +73,7 @@ extension Graph {
     // MARK: - Djikstra
     
     func runDjikstra(startingFrom node: Node) {
+        selectedAlgorithm = .djikstra
         djikstra(startingFrom: node)
         animateAlgorithm()
     }
@@ -120,8 +123,10 @@ extension Graph {
     // MARK: - Kruskal
     
     func runKruskal() {
+        selectedAlgorithm = .kruskal
         kruskal()
-        animateKruskal()
+//        animateKruskal()
+        removeEdgesFromTree()
     }
     
     private func kruskal() {
@@ -129,56 +134,49 @@ extension Graph {
         var sortedEdges = edges.flatMap{ $0 }.sorted(by: { $0 < $1 })
         var treeSize = 0
         var index = 0
-        var parents = [Int:Int]()
+        var parent = [Int:Int]()
         var rank = [Int:Int]()
         
         Graph.removeReversedIn(&sortedEdges)
         
         for node in unhiddenNodes {
-            parents[node.id] = node.id
+            parent[node.id] = node.id
             rank[node.id] = 0
-        }
-        
-        unhiddenNodes.forEach { node in
-            edgesInTree[node.id] = nil
         }
         
         while treeSize < numNodes-1 {
             let edge = sortedEdges[index]
-            let sourceParent = findParent(&parents, edge.source.id)
-            let destParent = findParent(&parents, edge.dest.id)
+            let sourceParent = findParent(&parent, edge.source.id)
+            let destParent = findParent(&parent, edge.dest.id)
             let thereIsNoCycle = (sourceParent != destParent)
             
             if thereIsNoCycle {
                 treeSize += 1
                 edgesInTree[edge.dest.id] = edge
-                union(parents: &parents, rank: &rank, node1: sourceParent, node2: destParent)
+                union(parent: &parent, rank: &rank, node1: sourceParent, node2: destParent)
             }
             
             index += 1
         }
     }
     
-    private func findParent(_ parents: inout [Int:Int], _ nodeId: Int) -> Int {
-        if parents[nodeId] != nodeId {
-            parents[nodeId] = findParent(&parents, parents[nodeId]!)
+    private func findParent(_ parent: inout [Int:Int], _ nodeId: Int) -> Int {
+        if parent[nodeId] != nodeId {
+            parent[nodeId] = findParent(&parent, parent[nodeId]!)
         }
-        return parents[nodeId]!
+        return parent[nodeId]!
     }
     
-    private func union(parents: inout [Int:Int], rank: inout [Int:Int], node1: Int, node2: Int) {
-        let parent1 = findParent(&parents, node1)
-        let parent2 = findParent(&parents, node2)
+    private func union(parent: inout [Int:Int], rank: inout [Int:Int], node1: Int, node2: Int) {
+        if rank[node1] == nil || rank[node2] == nil { return }
         
-        if rank[parent1] == nil || rank[parent2] == nil { return }
-        
-        if rank[parent1]! < rank[parent2]! {
-            parents[parent1] = parent2
-        } else if rank[parent1]! > rank[parent2]! {
-            parents[parent2] = parent1
+        if rank[node1]! < rank[node2]! {
+            parent[node1] = node2
+        } else if rank[node1]! > rank[node2]! {
+            parent[node2] = node1
         } else {
-            parents[parent2] = parent1
-            rank[parent1]! += 1
+            parent[node2] = node1
+            rank[node1]! += 1
         }
     }
 }
@@ -196,7 +194,12 @@ extension Graph  {
                 algTimer.invalidate()
                 self.timer?.invalidate()
                 self.algorithmState = .notStarted
-                self.removeEdgesFromTree()
+                
+                if self.selectedAlgorithm == .djikstra {
+                    self.removeEdgesFromTree()
+                }
+                
+                self.selectedAlgorithm = nil
                 return
             }
             
@@ -227,6 +230,7 @@ extension Graph  {
                 algTimer.invalidate()
                 self.timer?.invalidate()
                 self.algorithmState = .notStarted
+                self.selectedAlgorithm = nil
                 return
             }
             

@@ -23,6 +23,7 @@ class Graph: ObservableObject, Copying {
     @Published var visitedNodesIds = [Int]()
     @Published var algorithmState: AlgorithmState = .notStarted
     
+    var selectedAlgorithm: Algorithm?
     var timer: Timer?
     var finalNodeId: Int?
     var edgesInTree = [Int:Edge?]()

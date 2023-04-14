@@ -198,7 +198,7 @@ extension GraphViewViewModel {
         eraseAllEdgesWeights()
         graph.resetTree()
         
-        if selectedAlgorithm == .djikstra || selectedAlgorithm == .mst {
+        if selectedAlgorithm == .djikstra || selectedAlgorithm == .kruskal {
             setRandomWeightsForAllEdges()
             step = .edgesWeigthsSelection
         } else {
@@ -462,6 +462,7 @@ extension GraphViewViewModel {
                 step = .askingForAlgorithmSelection
                 
             case .initialFinalNodesSelection:
+                if hasNoInitialFinalNodes() { return }
                 step = .askingForAlgorithmSelection
                 
             default: break
@@ -539,6 +540,7 @@ extension GraphViewViewModel {
             graph.unvisitAllNodes()
             graph.resetTree()
             step = .liveAlgorithm
+            #warning("Não roda a 2a vez se eu manter o alg")
             graph.runKruskal()
             observeAlgorithmFinishedStatus()
         }
