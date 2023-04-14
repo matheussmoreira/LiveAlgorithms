@@ -17,7 +17,7 @@ class Edge: ObservableObject {
     @Published var sourcePosition: CGPoint
     @Published var destPosition: CGPoint
     @Published var weight: Int = 0
-    @Published var isInSPT = true
+    @Published var inTree = true
     
     var reversed: Edge {
         let rev = Edge(from: dest, to: source)
@@ -56,12 +56,12 @@ class Edge: ObservableObject {
         weight = 0
     }
     
-    func setAsOutOfSPT() {
-        isInSPT = false
+    func setAsOutOfTree() {
+        inTree = false
     }
     
-    func setAsInSPT() {
-        isInSPT = true
+    func setAsInTree() {
+        inTree = true
     }
 }
 
@@ -72,6 +72,12 @@ extension Edge: Equatable, Comparable {
         return lhs.source == rhs.source
                 && lhs.dest == rhs.dest
                 && lhs.weight == rhs.weight
+    }
+    
+    static func ~= (lhs: Edge, rhs: Edge) -> Bool {
+        return lhs.source == rhs.dest
+                    && lhs.dest == rhs.source
+                    && lhs.weight == rhs.weight
     }
     
     static func < (lhs: Edge, rhs: Edge) -> Bool {

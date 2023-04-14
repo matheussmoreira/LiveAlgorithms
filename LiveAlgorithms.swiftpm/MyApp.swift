@@ -2,21 +2,28 @@ import SwiftUI
 
 @main
 struct MyApp: App {
-    @State private var isShowingCover = true
+    @State private var currentPage: Page = .coverPage
     
     var body: some Scene {
         WindowGroup {
-            if isShowingCover {
+            if currentPage == .coverPage {
                 CoverView()
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 7, execute: {
-                            isShowingCover.toggle()
-                        })
-                    }
-            } else {
-                GraphView()
+                    .onAppear { routeToGraphPage() }
+                
+            } else if currentPage == .graphPage {
+                GraphView(page: $currentPage)
+                    .transition(.opacity.animation(.easeInOut(duration: 0.5)))
+                
+            } else { // .finalPage
+                FinalView()
                     .transition(.opacity.animation(.easeInOut(duration: 0.5)))
             }
         }
+    }
+    
+    private func routeToGraphPage() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 7, execute: {
+            currentPage = .graphPage
+        })
     }
 }

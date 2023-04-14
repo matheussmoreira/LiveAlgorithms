@@ -21,12 +21,12 @@ class Graph: ObservableObject, Copying {
     @Published var edges: [[Edge]]
     @Published var visitedFinalNodeId: Int?
     @Published var visitedNodesIds = [Int]()
-    @Published var algorithmIsRunning = false
+    @Published var algorithmState: AlgorithmState = .notStarted
     
+    var selectedAlgorithm: Algorithm?
     var timer: Timer?
     var finalNodeId: Int?
-    var edgesInSPT = [Int:Edge?]()
-//    var edgesOutOfSPT = [Edge]()
+    var edgesInTree = [Int:Edge?]()
     
     // MARK: - Computed Properties
     
@@ -62,7 +62,7 @@ class Graph: ObservableObject, Copying {
     
     func stopTimer() {
         timer?.invalidate()
-        algorithmIsRunning = false
+        algorithmState = .notStarted
     }
     
     // MARK: - Nodes
@@ -93,24 +93,24 @@ class Graph: ObservableObject, Copying {
         }
     }
     
-    func removeEdgesFromSPT() {
+    func removeEdgesFromTree() {
         for nodeEdges in edges {
             for edge in nodeEdges {
-                if !edgesInSPT.contains(where: {$0.value == edge}) {
-                    edge.setAsOutOfSPT()
+                if !edgesInTree.contains(where: {$0.value == edge}) {
+                    edge.setAsOutOfTree()
                 }
             }
         }
         unvisitAllNodes()
     }
     
-    func resetSPT() {
+    func resetTree() {
         for nodeEdges in edges {
             for edge in nodeEdges {
-                edge.setAsInSPT()
+                edge.setAsInTree()
             }
         }
-        edgesInSPT = [:]
+        edgesInTree = [:]
     }
     
 }
@@ -227,6 +227,24 @@ extension Graph {
             for edge in nodeEdges {
                 removeEdge(edge)
             }
+        }
+    }
+    
+    // MARK: Remove reversed in array
+    
+    static func removeReversedIn(_ edgesArray: inout [Edge]) {
+        var toRemove = [Edge]()
+        
+        for ed in 0..<edgesArray.count-1 {
+            for next in ed+1..<edgesArray.count {
+                if edgesArray[ed] ~= edgesArray[next] {
+                    toRemove.append(edgesArray[next] )
+                }
+            }
+        }
+        
+        for ed in toRemove {
+            edgesArray.removeAll(where: { $0 == ed })
         }
     }
     

@@ -107,7 +107,7 @@ struct UIHelper {
 // MARK: - Methods
 
 extension UIHelper {
-    static func getTopBarText(for step: GraphMakingStep, algorithm: Algorithm?) -> String {
+    static func getTopBarText(for step: Step, algorithm: Algorithm?) -> String {
         switch step {
             case .nodeSelection:
                 return .selectTheNodes
@@ -128,10 +128,10 @@ extension UIHelper {
                 return .selectInitialNode
                 
             case .liveAlgorithm:
-                return algorithm?.rawValue ?? "Placeholder"
+                return algorithm?.rawValue ?? "Unknown algorithm"
                 
-            default:
-                return "Placeholder"
+            default: // .algorithmsList
+                return "Select algorithm"
         }
     }
     

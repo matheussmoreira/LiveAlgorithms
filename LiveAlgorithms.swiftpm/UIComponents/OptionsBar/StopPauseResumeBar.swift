@@ -43,12 +43,13 @@ struct StopPauseResumeBar: View {
         }
     }
     
-    func observeAlgorithmRunningStatus() {
-        vm.graph.$algorithmIsRunning.sink { running in
-            if running {
+    private func observeAlgorithmRunningStatus() {
+        vm.graph.$algorithmState.sink { state in
+            switch state {
+            case .running:
                 secButtonImage = .pause
                 secButtonText = "Pause"
-            } else {
+            default:
                 secButtonImage = .run
                 secButtonText = "Resume"
             }

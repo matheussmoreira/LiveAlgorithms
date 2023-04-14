@@ -15,7 +15,7 @@ class GraphViewViewModel: ObservableObject {
     // General
     private var graphStack: Stack<Graph>
     @Published var graph: Graph
-    @Published var step: GraphMakingStep
+    @Published var step: Step
     
     // Node selection
     @Published var graphInitialNode: Node?
@@ -39,10 +39,13 @@ class GraphViewViewModel: ObservableObject {
     // Navigation buttons
     var nextButtonOpacity: Double {
         switch step {
-        case .nodeSelection, .edgeSelection:
+        case .nodeSelection,
+                .edgeSelection,
+                .edgesWeigthsSelection,
+                .onlyInitialNodeSelection,
+                .initialFinalNodesSelection,
+                .askingForAlgorithmSelection:
             return 1
-        case .edgesWeigthsSelection, .onlyInitialNodeSelection:
-            return selectedAlgorithm == .djikstra ? 1 : 0
         default:
             return 0
         }
@@ -50,7 +53,7 @@ class GraphViewViewModel: ObservableObject {
     
     var previousButtonOpacity: Double {
         switch step {
-            case .nodeSelection, .algorithmsList:
+        case .nodeSelection, .algorithmsList:
             return 0
         default:
             return 1
@@ -58,11 +61,13 @@ class GraphViewViewModel: ObservableObject {
     }
     
     var showPreviousButton: Bool {
-        return !isShowingAlgorithmsList && !algorithmIsLive
+        return !isShowingAlgorithmsList
+                && !algorithmIsLive
     }
 
     var showNextButton: Bool {
-        return !isShowingAlgorithmsList && !algorithmIsLive
+        return !isShowingAlgorithmsList
+                && !algorithmIsLive
     }
     
     // User interaction
@@ -71,6 +76,10 @@ class GraphViewViewModel: ObservableObject {
         || step == .edgeSelection
         || step == .initialFinalNodesSelection
         || step == .onlyInitialNodeSelection
+    }
+    
+    var isChoosingInitialFinalNodes: Bool {
+        return step == .initialFinalNodesSelection
     }
     
     var isSettingEdgesWeights: Bool {
@@ -188,9 +197,9 @@ extension GraphViewViewModel {
         selectedAlgorithm = alg
         clearInitialFinalNodes()
         eraseAllEdgesWeights()
-        graph.resetSPT()
+        graph.resetTree()
         
-        if selectedAlgorithm == .djikstra || selectedAlgorithm == .mst {
+        if selectedAlgorithm == .djikstra || selectedAlgorithm == .prim {
             setRandomWeightsForAllEdges()
             step = .edgesWeigthsSelection
         } else {
@@ -449,6 +458,10 @@ extension GraphViewViewModel {
                 if hasNoInitialNode() { return }
                 step = .askingForAlgorithmSelection
                 
+            case .initialFinalNodesSelection:
+                if hasNoInitialFinalNodes() { return }
+                step = .askingForAlgorithmSelection
+                
             default: break
         }
     }
@@ -466,17 +479,21 @@ extension GraphViewViewModel {
                 clearInitialFinalNodes()
                 eraseAllEdgesWeights()
                 graph.unvisitAllNodes()
-                graph.resetSPT()
+                graph.resetTree()
                 step = .edgeSelection
-                
-            case .edgesWeigthsSelection:
-                step = .askingForAlgorithmSelection
                 
             case .onlyInitialNodeSelection:
                 clearInitialFinalNodes()
                 step = .edgesWeigthsSelection
-                
+            
             case .initialFinalNodesSelection:
+                selectedAlgorithm = nil
+                clearInitialFinalNodes()
+                step = .askingForAlgorithmSelection
+                
+            case .edgesWeigthsSelection:
+                selectedAlgorithm = nil
+                eraseAllEdgesWeights()
                 step = .askingForAlgorithmSelection
                 
             default: break
@@ -495,28 +512,34 @@ extension GraphViewViewModel {
         case .dfs:
             if hasNoInitialFinalNodes() { break }
             graph.unvisitAllNodes()
-            graph.resetSPT()
+            graph.resetTree()
             step = .liveAlgorithm
-            graph.animateDFS(startingFrom: graphInitialNode!)
+            graph.runDFS(startingFrom: graphInitialNode!)
             observeAlgorithmFinishedStatus()
                 
         case .bfs:
             if hasNoInitialFinalNodes() { break }
             graph.unvisitAllNodes()
-            graph.resetSPT()
+            graph.resetTree()
             step = .liveAlgorithm
-            graph.animateBFS(startingFrom: graphInitialNode!)
+            graph.runBFS(startingFrom: graphInitialNode!)
             observeAlgorithmFinishedStatus()
             
         case .djikstra:
             if hasNoInitialNode() { break }
             graph.unvisitAllNodes()
-            graph.resetSPT()
+            graph.resetTree()
             step = .liveAlgorithm
-            graph.animateDjikstra(startingFrom: graphInitialNode!)
+            graph.runDjikstra(startingFrom: graphInitialNode!)
             observeAlgorithmFinishedStatus()
                 
-        default: break
+        default: // Prim
+            if hasNoInitialNode() { break }
+            graph.unvisitAllNodes()
+            graph.resetTree()
+            step = .liveAlgorithm
+            graph.runPrim(startingFrom: graphInitialNode!)
+            observeAlgorithmFinishedStatus()
         }
     }
     
@@ -526,15 +549,15 @@ extension GraphViewViewModel {
     }
     
     private func observeAlgorithmFinishedStatus() {
-        graph.$visitedNodesIds.sink { nodes in
-            if nodes.isEmpty {
+        graph.$algorithmState.sink { state in
+            if state == .notStarted {
                 self.step = .askingForAlgorithmSelection
             }
         }.store(in: &cancellables)
     }
     
     func pauseResumeAlgorithm() {
-        graph.algorithmIsRunning.toggle()
+        graph.algorithmState = .paused
     }
     
     func stopAlgorithm() {

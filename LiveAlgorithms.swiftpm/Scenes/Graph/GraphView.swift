@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct GraphView: View {
+    @Binding var page: Page
     @StateObject private var vm = GraphViewViewModel()
     
     var body: some View {
@@ -23,7 +24,7 @@ struct GraphView: View {
                     ForEach(0..<nodeEdges.count, id: \.self) { j in
                         let edge = nodeEdges[j]
                         EdgeView(edge: edge)
-                            .zIndex(edge.isInSPT ? -1 : -2)
+                            .zIndex(edge.inTree ? -1 : -2)
                             .onTapGesture {
                                 withAnimation {
                                     vm.handleEdgeTap(edge)
@@ -122,7 +123,13 @@ struct GraphView: View {
                     // Next step
                     if vm.showNextButton {
                         Button(action: {
-                            withAnimation { vm.nextButtonTapped() }
+                            withAnimation {
+                                if vm.isAboutToPickOrRunAlgorithm {
+                                    page = .finalPage
+                                } else {
+                                    vm.nextButtonTapped()
+                                }
+                            }
                         }) {
                             Arrow(next: true)
                         }
@@ -140,6 +147,6 @@ struct GraphView: View {
 
 struct GraphView_Previews: PreviewProvider {
     static var previews: some View {
-        GraphView()
+        GraphView(page: .constant(.graphPage))
     }
 }

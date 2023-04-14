@@ -11,38 +11,15 @@ import Foundation
 
 extension Graph {
     
-    private func animateNodesVisitation() {
-        algorithmIsRunning = true
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { algTimer in
-            if !self.algorithmIsRunning { return }
-            
-            if self.visitedNodesIds.isEmpty {
-                algTimer.invalidate()
-                self.timer?.invalidate()
-                self.algorithmIsRunning = false
-                self.removeEdgesFromSPT()
-                return
-            }
-            
-            let id = self.visitedNodesIds.removeFirst()
-            self.nodes[id].setAsVisited()
-            
-            // DFS and BFS
-            if id == self.finalNodeId {
-                self.visitedFinalNodeId = self.finalNodeId
-            }
-        })
-    }
-    
     // MARK: DFS
     
-    func animateDFS(startingFrom node: Node) {
+    func runDFS(startingFrom node: Node) {
+        selectedAlgorithm = .dfs
         finalNodeId = nil
         visitedFinalNodeId = nil
         
         dfs(startingFrom: node)
-        animateNodesVisitation()
+        animateAlgorithm()
     }
     
     func dfs(startingFrom node: Node) {
@@ -63,12 +40,13 @@ extension Graph {
     
     // MARK: BFS
     
-    func animateBFS(startingFrom node: Node) {
+    func runBFS(startingFrom node: Node) {
+        selectedAlgorithm = .bfs
         finalNodeId = nil
         visitedFinalNodeId = nil
         
         bfs(startingFrom: node)
-        animateNodesVisitation()
+        animateAlgorithm()
     }
     
     private func bfs(startingFrom node: Node) {
@@ -94,9 +72,10 @@ extension Graph {
     
     // MARK: - Djikstra
     
-    func animateDjikstra(startingFrom node: Node) {
+    func runDjikstra(startingFrom node: Node) {
+        selectedAlgorithm = .djikstra
         djikstra(startingFrom: node)
-        animateNodesVisitation()
+        animateAlgorithm()
     }
     
     private func djikstra(startingFrom node: Node) {
@@ -104,13 +83,12 @@ extension Graph {
         
         unhiddenNodes.forEach { node in
             distances[node.id] = .max
-            edgesInSPT[node.id] = nil
         }
         
         distances[node.id] = 0
         
         while visitedNodesIds.count < unhiddenNodes.count {
-            let currentNodeId = minDistance(distances: distances)
+            let currentNodeId = minDistance(in: distances)
             visitedNodesIds.append(currentNodeId)
             
             for edge in edges[currentNodeId] where !visitedNodesIds.contains(edge.dest.id) {
@@ -119,15 +97,15 @@ extension Graph {
                 
                 let distanceToNeighbor = currentDistance + edge.weight
                 
-                if distanceToNeighbor < destDistance {
+                if destDistance > distanceToNeighbor {
                     distances[edge.dest.id] = distanceToNeighbor
-                    edgesInSPT[edge.dest.id] = edge
+                    edgesInTree[edge.dest.id] = edge
                 }
             }
         }
     }
     
-    func minDistance(distances: [Int:Int]) -> Int {
+    private func minDistance(in distances: [Int:Int]) -> Int {
         var closestNodeId = -1
         var shortestDistance = Int.max
         
@@ -141,4 +119,67 @@ extension Graph {
         return closestNodeId
     }
     
+    // MARK: - Prim
+    
+    func runPrim(startingFrom node: Node) {
+        selectedAlgorithm = .prim
+        prim(startingFrom: node)
+        animateAlgorithm()
+    }
+    
+    private func prim(startingFrom node: Node) {
+        var distances = [Int:Int]()
+        
+        for node in unhiddenNodes {
+            distances[node.id] = .max
+        }
+        
+        distances[node.id] = 0
+        
+        while visitedNodesIds.count < unhiddenNodes.count {
+            let currentNodeId = minDistance(in: distances)
+            visitedNodesIds.append(currentNodeId)
+            
+            for edge in edges[currentNodeId] where !visitedNodesIds.contains(edge.dest.id) {
+                guard let destDistance = distances[edge.dest.id] else { continue }
+                if destDistance > edge.weight {
+                    distances[edge.dest.id] = edge.weight
+                    edgesInTree[edge.dest.id] = edge
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Animations
+
+extension Graph  {
+    private func animateAlgorithm() {
+        algorithmState = .running
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { algTimer in
+            if self.algorithmState != .running { return }
+            
+            if self.visitedNodesIds.isEmpty {
+                algTimer.invalidate()
+                self.timer?.invalidate()
+                self.algorithmState = .notStarted
+                
+                if self.selectedAlgorithm == .djikstra || self.selectedAlgorithm == .prim {
+                    self.removeEdgesFromTree()
+                }
+                
+                self.selectedAlgorithm = nil
+                return
+            }
+            
+            let id = self.visitedNodesIds.removeFirst()
+            self.nodes[id].setAsVisited()
+            
+            // DFS and BFS
+            if id == self.finalNodeId {
+                self.visitedFinalNodeId = self.finalNodeId
+            }
+        })
+    }
 }
