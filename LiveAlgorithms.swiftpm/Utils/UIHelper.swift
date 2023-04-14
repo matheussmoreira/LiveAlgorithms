@@ -128,10 +128,10 @@ extension UIHelper {
                 return .selectInitialNode
                 
             case .liveAlgorithm:
-                return algorithm?.rawValue ?? "Placeholder"
+                return algorithm?.rawValue ?? "Unknown algorithm"
                 
-            default:
-                return "Placeholder"
+            default: // .algorithmsList
+                return "Select algorithm"
         }
     }
     

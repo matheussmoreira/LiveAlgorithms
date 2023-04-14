@@ -11,7 +11,7 @@ struct EdgeView: View {
     @ObservedObject var edge: Edge
 
     var color: Color {
-        edge.isInSPT ? .white : .darkGray
+        edge.inTree ? .white : .darkGray
     }
     
     var body: some View {

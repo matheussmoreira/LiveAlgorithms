@@ -41,7 +41,11 @@ enum Algorithm: String, CaseIterable, Identifiable {
     case bfs = "Breadth-first search"
     case dfs = "Depth-first search"
     case djikstra = "Djikstra's shortest path"
-    case mst = "Prim's minimum spanning tree"
+    case mst = "Kruskal's minimum spanning tree"
     
     var id: String { self.rawValue }
+}
+
+enum AlgorithmState {
+    case notStarted, running, paused
 }

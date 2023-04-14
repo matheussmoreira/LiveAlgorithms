@@ -23,7 +23,7 @@ struct GraphView: View {
                     ForEach(0..<nodeEdges.count, id: \.self) { j in
                         let edge = nodeEdges[j]
                         EdgeView(edge: edge)
-                            .zIndex(edge.isInSPT ? -1 : -2)
+                            .zIndex(edge.inTree ? -1 : -2)
                             .onTapGesture {
                                 withAnimation {
                                     vm.handleEdgeTap(edge)
