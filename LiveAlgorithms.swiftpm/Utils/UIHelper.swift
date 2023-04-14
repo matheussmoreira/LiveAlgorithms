@@ -107,7 +107,7 @@ struct UIHelper {
 // MARK: - Methods
 
 extension UIHelper {
-    static func getTopBarText(for step: GraphMakingStep, algorithm: Algorithm?) -> String {
+    static func getTopBarText(for step: Step, algorithm: Algorithm?) -> String {
         switch step {
             case .nodeSelection:
                 return .selectTheNodes

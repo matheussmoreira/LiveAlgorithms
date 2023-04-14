@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct GraphView: View {
+    @Binding var page: Page
     @StateObject private var vm = GraphViewViewModel()
     
     var body: some View {
@@ -122,7 +123,13 @@ struct GraphView: View {
                     // Next step
                     if vm.showNextButton {
                         Button(action: {
-                            withAnimation { vm.nextButtonTapped() }
+                            withAnimation {
+                                if vm.isAboutToPickOrRunAlgorithm {
+                                    page = .finalPage
+                                } else {
+                                    vm.nextButtonTapped()
+                                }
+                            }
                         }) {
                             Arrow(next: true)
                         }
@@ -140,6 +147,6 @@ struct GraphView: View {
 
 struct GraphView_Previews: PreviewProvider {
     static var previews: some View {
-        GraphView()
+        GraphView(page: .constant(.graphPage))
     }
 }

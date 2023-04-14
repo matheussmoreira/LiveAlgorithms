@@ -20,13 +20,18 @@ enum NodePlace {
 // MARK: - Edge
 
 enum EdgeError: Error {
-    case equalSourceDest
     case nilSourceNode
 }
 
-// MARK: - Graph
+// MARK: - Navigation
 
-enum GraphMakingStep: CaseIterable {
+enum Page {
+    case coverPage
+    case graphPage
+    case finalPage
+}
+
+enum Step: CaseIterable {
     case nodeSelection
     case edgeSelection
     case askingForAlgorithmSelection
@@ -37,11 +42,13 @@ enum GraphMakingStep: CaseIterable {
     case liveAlgorithm
 }
 
+// MARK: - Algorithms
+
 enum Algorithm: String, CaseIterable, Identifiable {
     case bfs = "Breadth-first search"
     case dfs = "Depth-first search"
     case djikstra = "Djikstra's shortest path"
-    case kruskal = "Kruskal's minimum spanning tree"
+    case prim = "Prim's minimum spanning tree"
     
     var id: String { self.rawValue }
 }

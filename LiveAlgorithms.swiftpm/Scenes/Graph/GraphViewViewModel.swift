@@ -15,7 +15,7 @@ class GraphViewViewModel: ObservableObject {
     // General
     private var graphStack: Stack<Graph>
     @Published var graph: Graph
-    @Published var step: GraphMakingStep
+    @Published var step: Step
     
     // Node selection
     @Published var graphInitialNode: Node?
@@ -43,7 +43,8 @@ class GraphViewViewModel: ObservableObject {
                 .edgeSelection,
                 .edgesWeigthsSelection,
                 .onlyInitialNodeSelection,
-                .initialFinalNodesSelection:
+                .initialFinalNodesSelection,
+                .askingForAlgorithmSelection:
             return 1
         default:
             return 0
@@ -198,7 +199,7 @@ extension GraphViewViewModel {
         eraseAllEdgesWeights()
         graph.resetTree()
         
-        if selectedAlgorithm == .djikstra || selectedAlgorithm == .kruskal {
+        if selectedAlgorithm == .djikstra || selectedAlgorithm == .prim {
             setRandomWeightsForAllEdges()
             step = .edgesWeigthsSelection
         } else {
@@ -451,11 +452,7 @@ extension GraphViewViewModel {
                 step = .askingForAlgorithmSelection
 
             case .edgesWeigthsSelection:
-                if selectedAlgorithm == .djikstra {
-                    step = .onlyInitialNodeSelection
-                } else { // Kruskal
-                    step = .askingForAlgorithmSelection
-                }
+                step = .onlyInitialNodeSelection
             
             case .onlyInitialNodeSelection:
                 if hasNoInitialNode() { return }
@@ -536,12 +533,12 @@ extension GraphViewViewModel {
             graph.runDjikstra(startingFrom: graphInitialNode!)
             observeAlgorithmFinishedStatus()
                 
-        default: // Kruskal
+        default: // Prim
+            if hasNoInitialNode() { break }
             graph.unvisitAllNodes()
             graph.resetTree()
             step = .liveAlgorithm
-            #warning("Não roda a 2a vez se eu manter o alg")
-            graph.runKruskal()
+            graph.runPrim(startingFrom: graphInitialNode!)
             observeAlgorithmFinishedStatus()
         }
     }

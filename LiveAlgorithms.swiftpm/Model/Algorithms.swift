@@ -83,13 +83,12 @@ extension Graph {
         
         unhiddenNodes.forEach { node in
             distances[node.id] = .max
-            edgesInTree[node.id] = nil
         }
         
         distances[node.id] = 0
         
         while visitedNodesIds.count < unhiddenNodes.count {
-            let currentNodeId = minDistance(distances: distances)
+            let currentNodeId = minDistance(in: distances)
             visitedNodesIds.append(currentNodeId)
             
             for edge in edges[currentNodeId] where !visitedNodesIds.contains(edge.dest.id) {
@@ -98,7 +97,7 @@ extension Graph {
                 
                 let distanceToNeighbor = currentDistance + edge.weight
                 
-                if distanceToNeighbor < destDistance {
+                if destDistance > distanceToNeighbor {
                     distances[edge.dest.id] = distanceToNeighbor
                     edgesInTree[edge.dest.id] = edge
                 }
@@ -106,7 +105,7 @@ extension Graph {
         }
     }
     
-    private func minDistance(distances: [Int:Int]) -> Int {
+    private func minDistance(in distances: [Int:Int]) -> Int {
         var closestNodeId = -1
         var shortestDistance = Int.max
         
@@ -120,63 +119,34 @@ extension Graph {
         return closestNodeId
     }
     
-    // MARK: - Kruskal
+    // MARK: - Prim
     
-    func runKruskal() {
-        selectedAlgorithm = .kruskal
-        kruskal()
-//        animateKruskal()
-        removeEdgesFromTree()
+    func runPrim(startingFrom node: Node) {
+        selectedAlgorithm = .prim
+        prim(startingFrom: node)
+        animateAlgorithm()
     }
     
-    private func kruskal() {
-        let numNodes = unhiddenNodes.count
-        var sortedEdges = edges.flatMap{ $0 }.sorted(by: { $0 < $1 })
-        var treeSize = 0
-        var index = 0
-        var parent = [Int:Int]()
-        var rank = [Int:Int]()
-        
-        Graph.removeReversedIn(&sortedEdges)
+    private func prim(startingFrom node: Node) {
+        var distances = [Int:Int]()
         
         for node in unhiddenNodes {
-            parent[node.id] = node.id
-            rank[node.id] = 0
+            distances[node.id] = .max
         }
         
-        while treeSize < numNodes-1 {
-            let edge = sortedEdges[index]
-            let sourceParent = findParent(&parent, edge.source.id)
-            let destParent = findParent(&parent, edge.dest.id)
-            let thereIsNoCycle = (sourceParent != destParent)
+        distances[node.id] = 0
+        
+        while visitedNodesIds.count < unhiddenNodes.count {
+            let currentNodeId = minDistance(in: distances)
+            visitedNodesIds.append(currentNodeId)
             
-            if thereIsNoCycle {
-                treeSize += 1
-                edgesInTree[edge.dest.id] = edge
-                union(parent: &parent, rank: &rank, node1: sourceParent, node2: destParent)
+            for edge in edges[currentNodeId] where !visitedNodesIds.contains(edge.dest.id) {
+                guard let destDistance = distances[edge.dest.id] else { continue }
+                if destDistance > edge.weight {
+                    distances[edge.dest.id] = edge.weight
+                    edgesInTree[edge.dest.id] = edge
+                }
             }
-            
-            index += 1
-        }
-    }
-    
-    private func findParent(_ parent: inout [Int:Int], _ nodeId: Int) -> Int {
-        if parent[nodeId] != nodeId {
-            parent[nodeId] = findParent(&parent, parent[nodeId]!)
-        }
-        return parent[nodeId]!
-    }
-    
-    private func union(parent: inout [Int:Int], rank: inout [Int:Int], node1: Int, node2: Int) {
-        if rank[node1] == nil || rank[node2] == nil { return }
-        
-        if rank[node1]! < rank[node2]! {
-            parent[node1] = node2
-        } else if rank[node1]! > rank[node2]! {
-            parent[node2] = node1
-        } else {
-            parent[node2] = node1
-            rank[node1]! += 1
         }
     }
 }
@@ -195,7 +165,7 @@ extension Graph  {
                 self.timer?.invalidate()
                 self.algorithmState = .notStarted
                 
-                if self.selectedAlgorithm == .djikstra {
+                if self.selectedAlgorithm == .djikstra || self.selectedAlgorithm == .prim {
                     self.removeEdgesFromTree()
                 }
                 
@@ -210,38 +180,6 @@ extension Graph  {
             if id == self.finalNodeId {
                 self.visitedFinalNodeId = self.finalNodeId
             }
-        })
-    }
-    
-    private func animateKruskal() {
-        algorithmState = .running
-        
-        var sortedEdges = edges.flatMap{ $0 }.sorted(by: { $0 < $1 })
-        Graph.removeReversedIn(&sortedEdges)
-        
-        let edgesOutOfTreeQuant = sortedEdges.count - edgesInTree.count - 1
-        var edgesOutOfTreeCount = 0
-        var index = -1
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { algTimer in
-            if self.algorithmState != .running { return }
-            
-            if edgesOutOfTreeCount == edgesOutOfTreeQuant {
-                algTimer.invalidate()
-                self.timer?.invalidate()
-                self.algorithmState = .notStarted
-                self.selectedAlgorithm = nil
-                return
-            }
-            
-            index += 1
-            let ed = sortedEdges[index]
-            
-            if !self.edgesInTree.contains(where: { $0.value == ed}) {
-                ed.setAsOutOfTree()
-                edgesOutOfTreeCount += 1
-            }
-            
         })
     }
 }
