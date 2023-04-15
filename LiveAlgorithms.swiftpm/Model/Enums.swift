@@ -27,6 +27,7 @@ enum EdgeError: Error {
 
 enum Page {
     case coverPage
+    case tutorialPage
     case graphPage
     case finalPage
 }

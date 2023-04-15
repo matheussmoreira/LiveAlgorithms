@@ -67,15 +67,19 @@ struct GraphView: View {
                         }
                 }
             }
-            // MARK: End Graph
             
-            // MARK: Alert
+            // MARK: Alerts and popup
+            
+            if vm.showGenericInstructionPopup {
+                GenericInstructionView(vm: vm)
+            }
+            
             if vm.showAlert {
                 AlertView(vm: vm)
             }
-            // MARK: End Alert
             
             VStack {
+                // MARK: Top part
                 if !vm.showAlert {
                     AppTitleInline()
                         .padding(.top, 32)
@@ -96,7 +100,13 @@ struct GraphView: View {
                     // Previous step
                     if vm.showPreviousButton {
                         Button(action: {
-                            withAnimation { vm.previousButtonTapped() }
+                            withAnimation {
+                                if vm.isChoosingNodes {
+                                    page = .tutorialPage
+                                } else {
+                                    vm.previousButtonTapped()
+                                }
+                            }
                         }) {
                             Arrow(next: false)
                         }
@@ -137,11 +147,16 @@ struct GraphView: View {
                     }
                 }
                 .opacity(vm.showAlert ? 0 : 1)
-                
-                // MARK: End bottom bar
 
             } // VStack
-        } // ZStack
+        }.onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                withAnimation {
+                    vm.showGenericInstructionPopup = true
+                }
+            })
+        }
+        // ZStack
     }
 }
 

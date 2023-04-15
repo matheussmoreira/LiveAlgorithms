@@ -14,7 +14,9 @@ struct BottomBarButton: View {
     var action: () -> Void
     
     var body: some View {
-        Button(action: self.action ) {
+        Button(action: {
+            if !disabled { self.action() }
+        } ) {
             HStack {
                 image
                     .foregroundColor(disabled ? .gray : .white)

@@ -15,7 +15,10 @@ struct UIHelper {
     static let screenHeight = UIScreen.main.bounds.height
     
     static let blackBoxHeight = screenHeight * 260/1133
-    static let greenCircleSize = CGSize(width: screenWidth * 50/744, height: screenHeight * 50/1133)
+    static let graphExampleImageWidth = screenWidth * 0.55
+    static let tutorialTextWidth = screenWidth * 0.85
+    static let agreementPopupWidth = screenWidth * 0.75
+    static let agreementPopupHeight = screenHeight * 0.25
     
     // MARK: - Positions
     
