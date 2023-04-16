@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GraphView: View {
     @Binding var page: Page
+    @Binding var showPopupAgain: Bool
     @StateObject private var vm = GraphViewViewModel()
     
     var body: some View {
@@ -70,8 +71,8 @@ struct GraphView: View {
             
             // MARK: Alerts and popup
             
-            if vm.showGenericInstructionPopup {
-                GenericInstructionView(vm: vm)
+            if showPopupAgain && vm.showGenericInstructionPopup {
+                GenericInstructionView(vm: vm, showPopupAgain: $showPopupAgain)
             }
             
             if vm.showAlert {
@@ -160,17 +161,13 @@ struct GraphView: View {
             } // VStack
         }.onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-                withAnimation {
-                    vm.showGenericInstructionPopup = true
+                if showPopupAgain {
+                    withAnimation {
+                        vm.showGenericInstructionPopup = true
+                    }
                 }
             })
         }
         // ZStack
-    }
-}
-
-struct GraphView_Previews: PreviewProvider {
-    static var previews: some View {
-        GraphView(page: .constant(.graphPage))
     }
 }

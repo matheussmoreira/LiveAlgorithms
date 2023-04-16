@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct MyApp: App {
     @State private var currentPage: Page = .coverPage
+    @State private var showGenericInstructionPopup = true
     
     var body: some Scene {
         WindowGroup {
@@ -12,9 +13,10 @@ struct MyApp: App {
                 
             } else if currentPage == .tutorialPage {
                 TutorialView(page: $currentPage)
+                    .transition(.opacity.animation(.easeInOut(duration: 0.5)))
                 
             } else if currentPage == .graphPage {
-                GraphView(page: $currentPage)
+                GraphView(page: $currentPage, showPopupAgain: $showGenericInstructionPopup)
                     .transition(.opacity.animation(.easeInOut(duration: 0.5)))
                 
             } else { // .finalPage

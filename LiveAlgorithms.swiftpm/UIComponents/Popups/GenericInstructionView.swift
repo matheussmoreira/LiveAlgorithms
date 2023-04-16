@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GenericInstructionView: View {
     @ObservedObject var vm: GraphViewViewModel
+    @Binding var showPopupAgain: Bool
     
     var body: some View {
         Rectangle()
@@ -34,6 +35,7 @@ struct GenericInstructionView: View {
                     Button(action: {
                         withAnimation {
                             vm.showGenericInstructionPopup = false
+                            showPopupAgain = false
                         }
                     } ) {
                         RoundedRectangle(cornerRadius: 4)
