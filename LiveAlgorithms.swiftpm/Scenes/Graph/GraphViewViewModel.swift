@@ -436,12 +436,16 @@ extension GraphViewViewModel {
         let copy = graph.copy()
         copy.removeAllEdges()
         graph = copy
+        edgeSourceNode?.setAsNotVisited()
+        edgeSourceNode = nil
     }
     
     private func randomizeEdgeSelection() {
         let copy = graph.copy()
         copy.edges = copy.getRandomEdges()
         graph = copy
+        edgeSourceNode?.setAsNotVisited()
+        edgeSourceNode = nil
     }
     
     // MARK: Navigation issues
@@ -482,6 +486,8 @@ extension GraphViewViewModel {
                 
             case .edgeSelection:
                 if foundDisconnectedGraph() { return }
+                edgeSourceNode?.setAsNotVisited()
+                edgeSourceNode = nil
                 graphStack.push(graph.copy())
                 step = .askingForAlgorithmSelection
 
