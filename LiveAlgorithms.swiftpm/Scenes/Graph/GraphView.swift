@@ -78,6 +78,11 @@ struct GraphView: View {
                 AlertView(vm: vm)
             }
             
+            if vm.showAlgorithmExplanationBox {
+                ExplanationBoxView(vm: vm, algorithm:
+                                    vm.selectedAlgorithmForExplanation)
+            }
+            
             VStack {
                 // MARK: Top part
                 if !vm.showAlert {
@@ -89,7 +94,7 @@ struct GraphView: View {
                     TopBar(text: vm.topBarText)
                         .frame(height: UIHelper.screenHeight * 64/1133)
                         .padding(.top, 32)
-                        .opacity(vm.showTwoNodesAlert ? 0 : 1)
+                        .opacity(vm.topBarOpacity)
                 }
                 
                 // MARK: Graph space
@@ -115,7 +120,9 @@ struct GraphView: View {
                     
                     // Options bar
                     if vm.isEditingNodesAndEdges {
-                        ClearRandomBar(vm: vm).padding()
+                        ClearRandomBar(vm: vm)
+                            .padding()
+                            .opacity(vm.clearRandomBarOpacity)
                         
                     } else if vm.isSettingEdgesWeights {
                        AlgorithmNameBar(text: vm.selectedAlgorithm?.id ?? "").padding()
@@ -127,7 +134,9 @@ struct GraphView: View {
                         StopPauseResumeBar(vm: vm).padding()
                         
                     } else {
-                        AlgorithmsList(vm: vm) .padding()
+                        AlgorithmsList(vm: vm)
+                            .padding()
+                            .opacity(vm.algorithmsListOpacity)
                     }
                     
                     // Next step

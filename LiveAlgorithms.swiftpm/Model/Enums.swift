@@ -46,8 +46,8 @@ enum Step: CaseIterable {
 // MARK: - Algorithms
 
 enum Algorithm: String, CaseIterable, Identifiable {
-    case bfs = "Breadth-first search"
     case dfs = "Depth-first search"
+    case bfs = "Breadth-first search"
     case djikstra = "Djikstra's shortest path"
     case prim = "Prim's minimum spanning tree"
     

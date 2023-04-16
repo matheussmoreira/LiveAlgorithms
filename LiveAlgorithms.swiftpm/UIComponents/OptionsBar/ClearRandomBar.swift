@@ -21,16 +21,12 @@ struct ClearRandomBar: View {
             
             HStack {
                 Spacer()
-                BottomBarButton(image: .clear,
-                                text: "Clear",
-                                disabled: vm.showGenericInstructionPopup) {
+                BottomBarButton(image: .clear, text: "Clear") {
                     withAnimation { vm.clearButtonTapped() }
                 }.padding(.trailing)
                 Spacer()
                 
-                BottomBarButton(image: .random,
-                                text: "Random",
-                                disabled: vm.showGenericInstructionPopup) {
+                BottomBarButton(image: .random, text: "Random") {
                     withAnimation { vm.randomButtonTapped() }
                 }.padding(.leading)
                 Spacer()

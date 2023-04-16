@@ -21,6 +21,7 @@ struct BottomBarButton: View {
                 image
                     .foregroundColor(disabled ? .gray : .white)
                     .font(.title2)
+                    .fontWeight(.semibold)
                 Text(text)
                     .foregroundColor(disabled ? .gray : .white)
                     .font(.title2)

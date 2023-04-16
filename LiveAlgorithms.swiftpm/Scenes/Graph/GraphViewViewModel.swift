@@ -25,11 +25,13 @@ class GraphViewViewModel: ObservableObject {
     
     // Algorithm selection
     @Published var selectedAlgorithm: Algorithm?
+    @Published var selectedAlgorithmForExplanation: Algorithm = .bfs // Any
     
     private var cancellables = Set<AnyCancellable>()
     
     // Pop-ups
     @Published var showGenericInstructionPopup = false
+    @Published var showAlgorithmExplanationBox = false
     @Published var showTwoNodesAlert = false
     @Published var showDisconnectedGraphAlert = false
     @Published var showNoInitialFinalNodesAlert = false
@@ -37,16 +39,38 @@ class GraphViewViewModel: ObservableObject {
     
     // MARK: - Computed Properties
     
+    // Opacities
+    var topBarOpacity: Double {
+        if showAlgorithmExplanationBox || showGenericInstructionPopup {
+            return 0
+        }
+        return 1
+    }
+    
+    var clearRandomBarOpacity: Double {
+        if showGenericInstructionPopup { return 0 }
+        return 1
+    }
+    
+    var algorithmsListOpacity: Double {
+        if showAlgorithmExplanationBox { return 0 }
+        return 1
+    }
+    
     // Navigation buttons
     var nextButtonOpacity: Double {
         switch step {
-        case .nodeSelection,
-                .edgeSelection,
+        case .nodeSelection:
+            if showGenericInstructionPopup { return 0 }
+            return 1
+                
+        case .edgeSelection,
                 .edgesWeigthsSelection,
                 .onlyInitialNodeSelection,
                 .initialFinalNodesSelection,
                 .askingForAlgorithmSelection:
             return 1
+                
         default:
             return 0
         }
@@ -54,8 +78,15 @@ class GraphViewViewModel: ObservableObject {
     
     var previousButtonOpacity: Double {
         switch step {
-        case .algorithmsList: return 0
-        default: return 1
+        case .nodeSelection:
+            if showGenericInstructionPopup { return 0 }
+            return 1
+                
+        case .algorithmsList:
+            return 0
+                
+        default:
+            return 1
         }
     }
     

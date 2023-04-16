@@ -1,46 +1,49 @@
 //
-//  GenericInstructionView.swift
+//  ExplanationBoxView.swift
 //  
 //
-//  Created by Matheus S. Moreira on 15/04/23.
+//  Created by Matheus S. Moreira on 16/04/23.
 //
 
 import SwiftUI
 
-struct GenericInstructionView: View {
+struct ExplanationBoxView: View {
     @ObservedObject var vm: GraphViewViewModel
+    let algorithm: Algorithm
     
     var body: some View {
         Rectangle()
             .fill(Color.blackGray)
             .blur(radius: 10)
-            .frame(maxWidth: UIHelper.agreementPopupWidth,
-                   maxHeight: UIHelper.agreementPopupHeight)
+            .frame(maxWidth: UIHelper.explanationBoxWidth,
+                   maxHeight: UIHelper.explanationBoxHeight)
             .overlay {
                 VStack {
-                    Text("Attention!")
+                    Text(algorithm.rawValue)
                         .foregroundColor(.white)
                         .bold()
                         .font(.title)
                     
-                    Text("To build a nice graph, just care about its organization, i.e., the total number of nodes/edges and edges intersections. If it is too messy, you will have a hard visualization.")
+                    Text(UIHelper.getAlgorithmExplanationText(for: algorithm))
                         .foregroundColor(.white)
                         .fontWeight(.semibold)
                         .font(.title3)
                         .multilineTextAlignment(.center)
-                        .padding()
+                        .padding(.horizontal, 80)
+                        .padding(.vertical)
                     
                     Button(action: {
                         withAnimation {
-                            vm.showGenericInstructionPopup = false
+                            vm.showAlgorithmExplanationBox = false
                         }
                     } ) {
                         RoundedRectangle(cornerRadius: 4)
                             .foregroundColor(.clear)
                             .border(Color.white)
-                            .frame(width: 250, height: 50)
+                            .frame(width: 100, height: 50)
+                            .padding()
                             .overlay {
-                                Text("I understand")
+                                Text("Ok")
                                     .foregroundColor(.white)
                                     .fontWeight(.semibold)
                                     .padding()
