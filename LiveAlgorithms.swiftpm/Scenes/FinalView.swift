@@ -13,8 +13,9 @@ struct FinalView: View {
             Color.darkGray
                 .ignoresSafeArea()
             
-            Text("Final page")
-                .foregroundColor(.white)
+            Image("Thank You")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
         }
         
     }

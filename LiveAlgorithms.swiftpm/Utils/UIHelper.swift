@@ -13,9 +13,14 @@ struct UIHelper {
     
     static let screenWidth = UIScreen.main.bounds.width
     static let screenHeight = UIScreen.main.bounds.height
-    
-    static let blackBoxHeight = screenHeight * 260/1133
-    static let greenCircleSize = CGSize(width: screenWidth * 50/744, height: screenHeight * 50/1133)
+    static let graphExampleImageWidth = screenWidth * 0.55
+    static let tutorialTextWidth = screenWidth * 0.85
+    static let agreementPopupWidth = screenWidth * 0.75
+    static let agreementPopupHeight = screenHeight * 0.25
+    static let explanationBoxWidth = screenWidth * 0.75
+    static let explanationBoxHeight = screenHeight * 0.4
+    static let algorithmsListWidth = screenWidth * 0.86
+    static let algorithmsListHeight = screenWidth * 0.3
     
     // MARK: - Positions
     
@@ -102,9 +107,13 @@ struct UIHelper {
                 Self.pointOnScreen(x: 588, y: 64)
         ]
     }
+    
+    static func pointOnScreen(x: CGFloat, y: CGFloat) -> CGPoint {
+        return CGPoint(x: screenWidth * x/744, y: screenHeight * y/1133)
+    }
 }
 
-// MARK: - Methods
+// MARK: - Text
 
 extension UIHelper {
     static func getTopBarText(for step: Step, algorithm: Algorithm?) -> String {
@@ -135,7 +144,17 @@ extension UIHelper {
         }
     }
     
-    static func pointOnScreen(x: CGFloat, y: CGFloat) -> CGPoint {
-        return CGPoint(x: screenWidth * x/744, y: screenHeight * y/1133)
+    static func getAlgorithmExplanationText(for algorithm: Algorithm) -> String {
+        switch algorithm {
+            case .dfs:
+                return "Depth-first search performs a search in a graph. It starts from a source node and explores as far as possible (visiting the neighbors of the neighbors) along each branch before backtracking, i.e., visiting the node's neighbors and repeating this process.\n\nA graph can have more than one DFS, depending on the order the neighbors were added to the neighborhoods. Also, each node must be marked as visited since a graph may contain cycles and, therefore, each node can be processed twice or more."
+            case .bfs:
+                return "The breadth-first search performs a search in a graph. It starts from a source node and visits all nodes at the current depth level (neighborhood) before moving to the nodes at the next depth level (neighbors of the neighbors).\n\nA graph can have more than one BFS, depending on the order the neighbors were added to the neighborhoods. Also, each node must be marked as visited since a graph may contain cycles and, therefore, each node can be processed twice or more."
+            case .djikstra:
+                return "This algorithm finds the shortest path from a source node to all the other nodes in a graph considering the cost (edge's weights) to reach them. At the end of it's execution, it produces what we call Shortest Path Tree (SPT).\n\nIn comparison with Prim's algorithm, the sum of the costs of the edges in the SPT can be much larger than the cost of a Minimum Spanning Tree."
+            case .prim:
+                return "This algorithm finds the called Minimum Spanning Tree (MST), that is a subset of edges that forms a tree including all nodes, where the total weight of these edges is minimized.\n\nIn comparison with Djisktra's algorithm, the length of a path between any two nodes in the MST might not be the shortest path between them in the original graph."
+        }
     }
+    
 }

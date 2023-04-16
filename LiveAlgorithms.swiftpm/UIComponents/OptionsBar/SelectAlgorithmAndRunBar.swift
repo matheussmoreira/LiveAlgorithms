@@ -28,10 +28,10 @@ struct SelectAlgorithmAndRunBar: View {
                 }.padding(.trailing)
                 Spacer()
                 
-                BottomBarButton(image: .run, text: "Run", disabled: vm.selectedAlgorithm == nil) {
-                    withAnimation {
-                        vm.runAlgorithm()
-                    }
+                BottomBarButton(image: .run,
+                                text: "Run",
+                                disabled: vm.selectedAlgorithm == nil) {
+                    withAnimation { vm.runAlgorithm() }
                 }.padding(.leading)
                 Spacer()
             }

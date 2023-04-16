@@ -17,7 +17,7 @@ extension String {
              Tap on an edge to remove it
              """
     static let pickAnAlgorithm = "Now, pick an algorithm to see it running live!"
-    static let selectInitialFinalNodes = "Select the nodes where the algorithms will start and finish"
+    static let selectInitialFinalNodes = "Select the nodes where the algorithm will start and finish"
     static let selectEdgesWeights = "Tap on the numbers to select a random weight for the edges"
     static let selectInitialNode = "Select the node where the algorithm will start from"
 
@@ -26,7 +26,7 @@ extension String {
     static let mustHave2NodesAlert = "The graph must have at least 2 nodes!"
     static let disconnectedGraphAlert = """
          The graph is disconnected!\n
-         There must not be either a node or a subgraph disconnected from the whole.
+         There must not be either a node or\na subgraph disconnected from the whole.
          """
     
     static let noInitialFinalNodesAlert = "The graph must have both initial and final nodes set!"

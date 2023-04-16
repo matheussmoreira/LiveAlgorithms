@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GraphView: View {
     @Binding var page: Page
+    @Binding var showPopupAgain: Bool
     @StateObject private var vm = GraphViewViewModel()
     
     var body: some View {
@@ -67,15 +68,24 @@ struct GraphView: View {
                         }
                 }
             }
-            // MARK: End Graph
             
-            // MARK: Alert
+            // MARK: Alerts and popup
+            
+            if showPopupAgain && vm.showGenericInstructionPopup {
+                GenericInstructionView(vm: vm, showPopupAgain: $showPopupAgain)
+            }
+            
             if vm.showAlert {
                 AlertView(vm: vm)
             }
-            // MARK: End Alert
+            
+            if vm.showAlgorithmExplanationBox {
+                ExplanationBoxView(vm: vm, algorithm:
+                                    vm.selectedAlgorithmForExplanation)
+            }
             
             VStack {
+                // MARK: Top part
                 if !vm.showAlert {
                     AppTitleInline()
                         .padding(.top, 32)
@@ -85,7 +95,7 @@ struct GraphView: View {
                     TopBar(text: vm.topBarText)
                         .frame(height: UIHelper.screenHeight * 64/1133)
                         .padding(.top, 32)
-                        .opacity(vm.showTwoNodesAlert ? 0 : 1)
+                        .opacity(vm.topBarOpacity)
                 }
                 
                 // MARK: Graph space
@@ -96,7 +106,13 @@ struct GraphView: View {
                     // Previous step
                     if vm.showPreviousButton {
                         Button(action: {
-                            withAnimation { vm.previousButtonTapped() }
+                            withAnimation {
+                                if vm.isChoosingNodes {
+                                    page = .tutorialPage
+                                } else {
+                                    vm.previousButtonTapped()
+                                }
+                            }
                         }) {
                             Arrow(next: false)
                         }
@@ -105,7 +121,9 @@ struct GraphView: View {
                     
                     // Options bar
                     if vm.isEditingNodesAndEdges {
-                        ClearRandomBar(vm: vm).padding()
+                        ClearRandomBar(vm: vm)
+                            .padding()
+                            .opacity(vm.clearRandomBarOpacity)
                         
                     } else if vm.isSettingEdgesWeights {
                        AlgorithmNameBar(text: vm.selectedAlgorithm?.id ?? "").padding()
@@ -117,7 +135,9 @@ struct GraphView: View {
                         StopPauseResumeBar(vm: vm).padding()
                         
                     } else {
-                        AlgorithmsList(vm: vm) .padding()
+                        AlgorithmsList(vm: vm)
+                            .padding()
+                            .opacity(vm.algorithmsListOpacity)
                     }
                     
                     // Next step
@@ -137,16 +157,17 @@ struct GraphView: View {
                     }
                 }
                 .opacity(vm.showAlert ? 0 : 1)
-                
-                // MARK: End bottom bar
 
             } // VStack
-        } // ZStack
-    }
-}
-
-struct GraphView_Previews: PreviewProvider {
-    static var previews: some View {
-        GraphView(page: .constant(.graphPage))
+        }.onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                if showPopupAgain {
+                    withAnimation {
+                        vm.showGenericInstructionPopup = true
+                    }
+                }
+            })
+        }
+        // ZStack
     }
 }

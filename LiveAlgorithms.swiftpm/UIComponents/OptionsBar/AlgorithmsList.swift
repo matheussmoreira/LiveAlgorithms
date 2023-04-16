@@ -10,8 +10,6 @@ import SwiftUI
 struct AlgorithmsList: View {
     @ObservedObject var vm: GraphViewViewModel
     private let list = Algorithm.allCases
-    private let w = UIHelper.screenWidth * 647/744
-    private let h = UIHelper.screenWidth * 267/1133
     
     var body: some View {
         ZStack {
@@ -21,25 +19,40 @@ struct AlgorithmsList: View {
             
             VStack {
                 Text("Select algorithm")
-                    .fontWeight(.semibold)
-                    .font(.title2)
+                    .font(.title)
                     .foregroundColor(.white)
+                    .bold()
                 
                 ForEach(list) { alg in
-                    Button(action: {
-                        withAnimation {
-                            vm.selectAlgorithm(alg)
+                    HStack {
+                        Button(action: {
+                            withAnimation {
+                                vm.selectedAlgorithmForExplanation = alg
+                                vm.showAlgorithmExplanationBox = true
+                            }
+                        }) {
+                            Image.question
+                                .foregroundColor(.white)
+                                .font(.title2)
+                                .fontWeight(.semibold)
                         }
-                    }) {
-                        Text(alg.id)
-                            .fontWeight(.medium)
-                            .font(.title3)
-                            .foregroundColor(.white)
+                        
+                        Button(action: {
+                            withAnimation {
+                                vm.selectAlgorithm(alg)
+                            }
+                        }) {
+                            Text(alg.id)
+                                .fontWeight(.semibold)
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .padding(.vertical, 10)
+                        }
                     }
                 }
             }
         }
-        .frame(height: h)
-        .frame(maxWidth: w)
+        .frame(height: UIHelper.algorithmsListHeight)
+        .frame(maxWidth: UIHelper.algorithmsListWidth)
     }
 }
