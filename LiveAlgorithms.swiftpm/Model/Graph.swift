@@ -26,7 +26,7 @@ class Graph: ObservableObject, Copying {
     var selectedAlgorithm: Algorithm?
     var timer: Timer?
     var finalNodeId: Int?
-    var edgesInTree = [Int:Edge?]()
+    var tree = [Edge]()
     
     // MARK: - Computed Properties
     
@@ -96,7 +96,7 @@ class Graph: ObservableObject, Copying {
     func removeEdgesFromTree() {
         for nodeEdges in edges {
             for edge in nodeEdges {
-                if !edgesInTree.contains(where: {$0.value == edge}) {
+                if !tree.contains(where: {$0 == edge}) {
                     edge.setAsOutOfTree()
                 }
             }
@@ -110,7 +110,7 @@ class Graph: ObservableObject, Copying {
                 edge.setAsInTree()
             }
         }
-        edgesInTree = [:]
+        tree = []
     }
     
 }

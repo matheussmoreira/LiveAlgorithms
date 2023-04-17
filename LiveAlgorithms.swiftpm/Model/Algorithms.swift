@@ -99,9 +99,16 @@ extension Graph {
                 
                 if destDistance > distanceToNeighbor {
                     distances[edge.dest.id] = distanceToNeighbor
-                    edgesInTree[edge.dest.id] = edge
+                    addToTree(edge: edge)
                 }
             }
+        }
+    }
+    
+    private func addToTree(edge: Edge) {
+        if !tree.contains(where: { $0 == edge && $0 ~= edge }) {
+            tree.removeAll(where: { $0.dest == edge.dest })
+            tree.append(edge)
         }
     }
     
@@ -144,7 +151,7 @@ extension Graph {
                 guard let destDistance = distances[edge.dest.id] else { continue }
                 if destDistance > edge.weight {
                     distances[edge.dest.id] = edge.weight
-                    edgesInTree[edge.dest.id] = edge
+                    addToTree(edge: edge)
                 }
             }
         }

@@ -242,10 +242,13 @@ extension GraphViewViewModel {
     }
     
     private func setRandomWeightsForAllEdges() {
+        var withNewWeight = [Edge]()
+        
         for nodeEdges in graph.edges {
             for edge in nodeEdges {
-                if edge.weight == 0 {
+                if !withNewWeight.contains(where: { $0 ~= edge }) {
                     setRandomWeightOn(edge)
+                    withNewWeight.append(edge)
                 }
             }
         }
