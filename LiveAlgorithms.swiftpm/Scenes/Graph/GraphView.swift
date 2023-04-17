@@ -19,42 +19,34 @@ struct GraphView: View {
             
             // MARK: Graph
             ZStack {
-                // Edges
+                // Edges and weights
                 ForEach(0..<vm.graph.nodes.count, id: \.self) { i in
-                    let nodeEdges = vm.graph.edges[i]
+                    let nodeEdges = vm.graph.edges[i].filter({$0.inTree})
+                    
                     ForEach(0..<nodeEdges.count, id: \.self) { j in
                         let edge = nodeEdges[j]
+                        
                         EdgeView(edge: edge)
-                            .zIndex(edge.inTree ? -1 : -2)
                             .onTapGesture {
                                 withAnimation {
                                     vm.handleEdgeTap(edge)
                                 }
                             }
-                    }
-                }
-                
-                // Weights
-                ForEach(0..<vm.graph.nodes.count, id: \.self) { i in
-                    let nodeEdges = vm.graph.edges[i]
-                    ForEach(0..<nodeEdges.count, id: \.self) { j in
-                        let edge = nodeEdges[j]
-                        let x = edge.weightPosition.x
-                        let y = edge.weightPosition.y
                         
                         if edge.weight != 0 {
+                            let x = edge.weightPosition.x
+                            let y = edge.weightPosition.y
+                            
                             WeightCard(edge: edge)
                                 .position(x: x, y: y)
                                 .zIndex(1)
                                 .onTapGesture {
-                                    if !vm.isSettingEdgesWeights { return }
                                     withAnimation {
                                         vm.setRandomWeightOn(edge)
                                     }
                                 }
                         }
-
-                    }
+                    } // ForEach
                 }
                 
                 // Nodes

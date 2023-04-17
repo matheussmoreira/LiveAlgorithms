@@ -26,7 +26,7 @@ class Graph: ObservableObject, Copying {
     var selectedAlgorithm: Algorithm?
     var timer: Timer?
     var finalNodeId: Int?
-    var edgesInTree = [Int:Edge?]()
+    var tree = [Edge]()
     
     // MARK: - Computed Properties
     
@@ -78,6 +78,7 @@ class Graph: ObservableObject, Copying {
     
     func randomizeNodeSelection() {
         nodes.forEach { $0.randomizeSelection() }
+        nodes.filter({ !$0.isHidden }).forEach({ $0.randomizeSelection() })
     }
     
     // MARK: Visitation
@@ -96,7 +97,7 @@ class Graph: ObservableObject, Copying {
     func removeEdgesFromTree() {
         for nodeEdges in edges {
             for edge in nodeEdges {
-                if !edgesInTree.contains(where: {$0.value == edge}) {
+                if !tree.contains(where: {$0 == edge}) {
                     edge.setAsOutOfTree()
                 }
             }
@@ -110,7 +111,7 @@ class Graph: ObservableObject, Copying {
                 edge.setAsInTree()
             }
         }
-        edgesInTree = [:]
+        tree = []
     }
     
 }
@@ -195,18 +196,16 @@ extension Graph {
     // MARK: Weights
     
     func setWeightOn(edge: Edge, weight: Int) {
-        let sourceNode = nodes[edge.source.id]
-        let destNode = nodes[edge.dest.id]
-        
-        _ = edges[sourceNode.id].map {
+        edges[edge.source.id].forEach {
             if $0 == edge {
-                edge.weight = weight
+                $0.weight = weight
                 return
             }
         }
-        _ = edges[destNode.id].map {
-            if $0 == edge {
-                edge.weight = weight
+        
+        edges[edge.dest.id].forEach {
+            if $0 ~= edge {
+                $0.weight = weight
                 return
             }
         }

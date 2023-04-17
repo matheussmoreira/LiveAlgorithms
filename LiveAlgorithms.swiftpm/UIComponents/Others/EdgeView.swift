@@ -9,10 +9,6 @@ import SwiftUI
 
 struct EdgeView: View {
     @ObservedObject var edge: Edge
-
-    var color: Color {
-        edge.inTree ? .white : .darkGray
-    }
     
     var body: some View {
         Path { path in
@@ -20,6 +16,6 @@ struct EdgeView: View {
             path.addLine(to: edge.destPosition)
         }
         .stroke(lineWidth: 3)
-        .foregroundColor(color)
+        .foregroundColor(.white)
     }
 }

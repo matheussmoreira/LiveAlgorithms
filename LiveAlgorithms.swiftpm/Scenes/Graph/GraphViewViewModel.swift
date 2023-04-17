@@ -234,8 +234,8 @@ extension GraphViewViewModel {
         graph.resetTree()
         
         if selectedAlgorithm == .djikstra || selectedAlgorithm == .prim {
-            setRandomWeightsForAllEdges()
             step = .edgesWeigthsSelection
+            setRandomWeightsForAllEdges()
         } else {
             step = .initialFinalNodesSelection
         }
@@ -243,10 +243,8 @@ extension GraphViewViewModel {
     
     private func setRandomWeightsForAllEdges() {
         for nodeEdges in graph.edges {
-            for edge in nodeEdges {
-                if edge.weight == 0 {
-                    setRandomWeightOn(edge)
-                }
+            for edge in nodeEdges.filter({!$0.isReversed}) {
+                setRandomWeightOn(edge)
             }
         }
     }
@@ -365,7 +363,8 @@ extension GraphViewViewModel {
     // MARK: Weights
     
     func setRandomWeightOn(_ edge: Edge) {
-        let randomWeight = Int.random(in: 1...99)
+        if !isSettingEdgesWeights { return }
+        let randomWeight = Int.random(in: 1...50)
         graph.setWeightOn(edge: edge, weight: randomWeight)
     }
     
@@ -436,12 +435,16 @@ extension GraphViewViewModel {
         let copy = graph.copy()
         copy.removeAllEdges()
         graph = copy
+        edgeSourceNode?.setAsNotVisited()
+        edgeSourceNode = nil
     }
     
     private func randomizeEdgeSelection() {
         let copy = graph.copy()
         copy.edges = copy.getRandomEdges()
         graph = copy
+        edgeSourceNode?.setAsNotVisited()
+        edgeSourceNode = nil
     }
     
     // MARK: Navigation issues
@@ -482,6 +485,8 @@ extension GraphViewViewModel {
                 
             case .edgeSelection:
                 if foundDisconnectedGraph() { return }
+                edgeSourceNode?.setAsNotVisited()
+                edgeSourceNode = nil
                 graphStack.push(graph.copy())
                 step = .askingForAlgorithmSelection
 

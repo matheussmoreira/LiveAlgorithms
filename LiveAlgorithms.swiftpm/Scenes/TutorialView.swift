@@ -52,9 +52,9 @@ struct TutorialView: View {
                 Image("Graph Example")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: UIHelper.graphExampleImageWidth)
                     .border(Color.white)
-                
+                    .frame(maxWidth: UIHelper.graphExampleImageWidth)
+                    
                 Text("A graph may contain cycles, directed or undirected edges, edge with costs, separated subgraphs (making the whole a forest), and more. In the next steps, you will build your own graph and run some of the offered algorithms.")
                     .foregroundColor(.white)
                     .font(.title2)

@@ -16,11 +16,11 @@ struct UIHelper {
     static let graphExampleImageWidth = screenWidth * 0.55
     static let tutorialTextWidth = screenWidth * 0.85
     static let agreementPopupWidth = screenWidth * 0.75
-    static let agreementPopupHeight = screenHeight * 0.25
-    static let explanationBoxWidth = screenWidth * 0.75
-    static let explanationBoxHeight = screenHeight * 0.4
+    static let agreementPopupHeight = screenHeight * 0.3
+    static let explanationBoxWidth = screenWidth * 0.85
+    static let explanationBoxHeight = screenHeight * 0.45
     static let algorithmsListWidth = screenWidth * 0.86
-    static let algorithmsListHeight = screenWidth * 0.3
+    static let algorithmsListHeight = screenWidth * 0.35
     
     // MARK: - Positions
     
