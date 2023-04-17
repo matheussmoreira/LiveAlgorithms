@@ -78,6 +78,7 @@ class Graph: ObservableObject, Copying {
     
     func randomizeNodeSelection() {
         nodes.forEach { $0.randomizeSelection() }
+        nodes.filter({ !$0.isHidden }).forEach({ $0.randomizeSelection() })
     }
     
     // MARK: Visitation
@@ -195,18 +196,16 @@ extension Graph {
     // MARK: Weights
     
     func setWeightOn(edge: Edge, weight: Int) {
-        let sourceNode = nodes[edge.source.id]
-        let destNode = nodes[edge.dest.id]
-        
-        _ = edges[sourceNode.id].map {
+        edges[edge.source.id].forEach {
             if $0 == edge {
-                edge.weight = weight
+                $0.weight = weight
                 return
             }
         }
-        _ = edges[destNode.id].map {
-            if $0 == edge {
-                edge.weight = weight
+        
+        edges[edge.dest.id].forEach {
+            if $0 ~= edge {
+                $0.weight = weight
                 return
             }
         }

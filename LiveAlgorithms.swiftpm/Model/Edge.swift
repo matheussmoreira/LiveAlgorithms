@@ -18,10 +18,12 @@ class Edge: ObservableObject {
     @Published var destPosition: CGPoint
     @Published var weight: Int = 0
     @Published var inTree = true
+    var isReversed = false
     
     var reversed: Edge {
         let rev = Edge(from: dest, to: source)
         rev.weight = weight
+        rev.isReversed = true
         return rev
     }
     
@@ -71,13 +73,11 @@ extension Edge: Equatable, Comparable {
     static func == (lhs: Edge, rhs: Edge) -> Bool {
         return lhs.source == rhs.source
                 && lhs.dest == rhs.dest
-                && lhs.weight == rhs.weight
     }
     
     static func ~= (lhs: Edge, rhs: Edge) -> Bool {
         return lhs.source == rhs.dest
-                    && lhs.dest == rhs.source
-                    && lhs.weight == rhs.weight
+                && lhs.dest == rhs.source
     }
     
     static func < (lhs: Edge, rhs: Edge) -> Bool {

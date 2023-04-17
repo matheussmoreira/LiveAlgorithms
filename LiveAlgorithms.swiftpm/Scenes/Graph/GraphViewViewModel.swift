@@ -234,22 +234,17 @@ extension GraphViewViewModel {
         graph.resetTree()
         
         if selectedAlgorithm == .djikstra || selectedAlgorithm == .prim {
-            setRandomWeightsForAllEdges()
             step = .edgesWeigthsSelection
+            setRandomWeightsForAllEdges()
         } else {
             step = .initialFinalNodesSelection
         }
     }
     
     private func setRandomWeightsForAllEdges() {
-        var withNewWeight = [Edge]()
-        
         for nodeEdges in graph.edges {
-            for edge in nodeEdges {
-                if !withNewWeight.contains(where: { $0 ~= edge }) {
-                    setRandomWeightOn(edge)
-                    withNewWeight.append(edge)
-                }
+            for edge in nodeEdges.filter({!$0.isReversed}) {
+                setRandomWeightOn(edge)
             }
         }
     }
@@ -368,7 +363,8 @@ extension GraphViewViewModel {
     // MARK: Weights
     
     func setRandomWeightOn(_ edge: Edge) {
-        let randomWeight = Int.random(in: 1...99)
+        if !isSettingEdgesWeights { return }
+        let randomWeight = Int.random(in: 1...50)
         graph.setWeightOn(edge: edge, weight: randomWeight)
     }
     
