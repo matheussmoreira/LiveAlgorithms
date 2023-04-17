@@ -147,7 +147,7 @@ extension UIHelper {
     static func getAlgorithmExplanationText(for algorithm: Algorithm) -> String {
         switch algorithm {
             case .dfs:
-                return "Depth-first search performs a search in a graph. It starts from a source node and explores as far as possible (visiting the neighbors of the neighbors) along each branch before backtracking, i.e., visiting the node's neighbors and repeating this process.\n\nA graph can have more than one DFS, depending on the order the neighbors were added to the neighborhoods. Also, each node must be marked as visited since a graph may contain cycles and, therefore, each node can be processed twice or more."
+                return "Depth-first search performs a search in a graph. It starts from a source node and explores as far as possible (visiting the neighbors of the neighbors) along each branch before backtracking, i.e., visiting the remaining node's neighbors and repeating this process.\n\nA graph can have more than one DFS, depending on the order the neighbors were added to the neighborhoods. Also, each node must be marked as visited since a graph may contain cycles and, therefore, each node can be processed twice or more."
             case .bfs:
                 return "The breadth-first search performs a search in a graph. It starts from a source node and visits all nodes at the current depth level (neighborhood) before moving to the nodes at the next depth level (neighbors of the neighbors).\n\nA graph can have more than one BFS, depending on the order the neighbors were added to the neighborhoods. Also, each node must be marked as visited since a graph may contain cycles and, therefore, each node can be processed twice or more."
             case .djikstra:
