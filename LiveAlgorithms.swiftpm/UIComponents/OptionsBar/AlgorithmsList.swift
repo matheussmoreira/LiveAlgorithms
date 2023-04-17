@@ -18,6 +18,7 @@ struct AlgorithmsList: View {
                 .blur(radius: 10)
             
             VStack {
+                Spacer()
                 Text("Select algorithm")
                     .font(.title)
                     .foregroundColor(.white)
@@ -50,6 +51,7 @@ struct AlgorithmsList: View {
                         }
                     }
                 }
+                Spacer()
             }
         }
         .frame(height: UIHelper.algorithmsListHeight)
