@@ -510,6 +510,7 @@ extension GraphViewViewModel {
             case .edgeSelection:
                 retrievePreviousGraph()
                 graph.unvisitAllNodes()
+                edgeSourceNode = nil
                 step = .nodeSelection
                 
             case .askingForAlgorithmSelection:
