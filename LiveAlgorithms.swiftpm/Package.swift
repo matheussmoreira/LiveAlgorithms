@@ -10,7 +10,7 @@ import AppleProductTypes
 let package = Package(
     name: "LiveAlgorithms",
     platforms: [
-        .iOS("16.2")
+        .iOS("16.0")
     ],
     products: [
         .iOSApplication(
